@@ -1,0 +1,299 @@
+<!doctype html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>U02-WebWSPR</title>
+<link rel="icon" href="/favicon.ico?" type="image/x-icon">
+<script type="text/javascript" src="jquery-3.3.1.js"></script>
+<script type="text/javascript" src="jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="phpdir/wsprconfig.js"></script>
+<script type="text/javascript" src="wspr_js.js"></script>
+<link rel="stylesheet" type="text/css" href="jquery.dataTables.min.css">
+<link rel="stylesheet" type="text/css" href="wspr_style.css">
+
+<style>
+
+
+/*  ========== two main panels, side by side ============= */
+.wsprmain 
+{
+    width: 1200px;
+    display: flex;
+    background-color: #e0e0e0;
+}
+
+.panel
+{
+    width: 600px;
+    font-size: 12px;
+}
+
+.untertitel_rank
+{ 
+    display: flex;
+    font-family:verdana; 
+    font-size:18px; 
+    text-shadow: grey 1px 1px 1px; 
+    color:black; 
+    font-weight: 500;
+    margin:0px 0px; 
+    text-align:right; 
+    width: 1200px;
+}
+
+.untertitel_top
+{ 
+    font-family:verdana; 
+    font-size:24px; 
+    text-shadow: grey 1px 1px 1px; 
+    color:black; 
+    font-weight: 500;
+    margin:0px 0px; 
+    text-align:center; 
+    width: 600px;
+}
+
+/* make the table cells more compact */
+
+table.cell-border tbody th, table.cell-border tbody td {
+    padding: 3px;   /* row height */
+    padding-left: 25px;
+    padding-right: 25px;
+    white-space: nowrap;
+}
+
+</style>
+
+</head>
+
+<body>
+<script>
+window.onload = start;
+
+function start()
+{
+    loadTable();
+    loadTopTable();
+    
+    setInterval(CurrentDate, 1000);
+    setInterval(reloadData, 10000);
+    
+    document.getElementById("header_call").innerHTML = config.call + " " + config.qthloc;
+    createBandselRadios();
+}
+
+// Draw Table and update via Ajax
+var CallsignTable, Topranktable;
+var tablename = "JSON_RANKING_5.txt";
+
+function loadTable() 
+{
+    CallsignTable = $('#ranking').DataTable( 
+        {
+            ajax:     tablename,
+            columns: [
+                        { data: 'rank' },
+                        { data: 'spots' },
+                        { data: 'callsign' },
+                        { data: 'locator' },
+                    ],
+            "order": [[ 0, "asc" ]],
+            scrollY:        500,	// vertical size
+            scrollX:        200,
+            scrollCollapse: true,
+            scroller:       true,
+	    	pageLength:     250,		// number of displayed line by default
+	    	bLengthChange:  false,
+            fnRowCallback: function (nRow, aData, iDisplayIndex, iDisplayIndexFull) 
+                            { 
+                                var white1 = '#ffffff';
+                                var white2 = '#f8f8f8';
+                                
+                                // alternate lines
+                                if(iDisplayIndex & 1)
+                                {
+                                    // darker lines
+                                    // make time/call darker
+                                    $("td:eq(0)", nRow).css('background', white2);
+                                    $("td:eq(1)", nRow).css('background', white2);
+                                    $("td:eq(2)", nRow).css('background', white2);
+                                    $("td:eq(3)", nRow).css('background', white2);
+                                }
+                                
+                                if(aData['callsign'] == config.call)
+                                {
+                                    $("td:eq(2)", nRow).css('background', '#008000');
+                                    $("td:eq(2)", nRow).css('font-weight', '800');
+                                    $("td:eq(2)", nRow).css('color', 'white');
+                                }
+                                
+                                if(aData['callsign'] == config.call_ur1 || aData['callsign'] == config.call_ur2 || aData['callsign'] == config.call_ur3 || aData['callsign'] == config.call_ur4 || aData['callsign'] == config.call_ur5)
+                                {
+                                    $("td:eq(2)", nRow).css('background', '#c0b000');
+                                    $("td:eq(2)", nRow).css('font-weight', '700');
+                                    $("td:eq(2)", nRow).css('color', 'white');
+                                }
+                            },
+        }
+    );
+}
+
+function loadTopTable()
+{
+    Topranktable = $('#topranking').DataTable( 
+        {
+            ajax:     "JSON_RANKING_TOP.txt",
+            columns: [
+                        { data: 'ID' },
+                        { data: 'band' },
+                        { data: 'rank' },
+                        { data: 'spots' },
+                        { data: 'callsign' },
+                        { data: 'locator' },
+                    ],
+            columnDefs :    [
+                                { visible: false, "targets": [0] }, // col 0 is only required to sort the band list
+                            ],
+            "order": [[ 0, "asc" ]],
+            scrollY:        500,	// vertical size
+            scrollX:        200,
+            scrollCollapse: true,
+            scroller:       true,
+	    	pageLength:     250,		// number of displayed line by default
+	    	bLengthChange:  false,
+	    	searching:      false,
+            fnRowCallback: function (nRow, aData, iDisplayIndex, iDisplayIndexFull) 
+                            { 
+                                var white1 = '#ffffff';
+                                var white2 = '#f8f8f8';
+                                
+                                // alternate lines
+                                if(iDisplayIndex & 1)
+                                {
+                                    // darker lines
+                                    // make time/call darker
+                                    $("td:eq(0)", nRow).css('background', white2);
+                                    $("td:eq(1)", nRow).css('background', white2);
+                                    $("td:eq(2)", nRow).css('background', white2);
+                                    $("td:eq(3)", nRow).css('background', white2);
+                                    $("td:eq(4)", nRow).css('background', white2);
+                                }
+                                
+                                if(aData['ID'] == 0)
+                                {
+                                    $("td:eq(3)", nRow).css('background', '#808080');
+                                    $("td:eq(3)", nRow).css('font-weight', '600');
+                                    $("td:eq(3)", nRow).css('color', 'white');
+                                    $("td:eq(1)", nRow).css('color', 'white');
+                                    $("td:eq(2)", nRow).css('color', 'white');
+                                }
+                                
+                                if(aData['callsign'] == config.call)
+                                {
+                                    $("td:eq(3)", nRow).css('background', '#008000');
+                                    $("td:eq(3)", nRow).css('font-weight', '800');
+                                    $("td:eq(3)", nRow).css('color', 'white');
+                                }
+                                
+                                if(aData['callsign'] == config.call_ur1 || aData['callsign'] == config.call_ur2 || aData['callsign'] == config.call_ur3 || aData['callsign'] == config.call_ur4 || aData['callsign'] == config.call_ur5)
+                                {
+                                    $("td:eq(3)", nRow).css('background', '#c0b000');
+                                    $("td:eq(3)", nRow).css('font-weight', '700');
+                                    $("td:eq(3)", nRow).css('color', 'white');
+                                }
+                            },
+        }
+    );
+    
+    $.fn.dataTable.ext.errMode = 'none';    // supress ajax error message if table not exists
+}
+
+function reloadData()
+{
+    CallsignTable.ajax.reload(null,false);
+    Topranktable.ajax.reload(null,false);
+}
+
+function createRadiobutton(cbID, parentElem,val, num)
+{
+    var radiobut = document.createElement("INPUT");
+    radiobut.setAttribute("type", "radio");
+    radiobut.setAttribute("name", "rankingbandsel");
+    radiobut.setAttribute("value", num);
+    radiobut.id = cbID;
+    radiobut.setAttribute("onclick", "OnChangeCheckbox(this)");
+    document.getElementById(parentElem).appendChild(radiobut);
+    
+    var t = document.createTextNode(val);
+    document.getElementById(parentElem).appendChild(t);
+}
+
+function OnChangeCheckbox(elem)
+{
+    var bandidx = Number(elem.value) + 1;
+    tablename = "JSON_RANKING_" + bandidx + ".txt";
+    //document.getElementById("footline").innerHTML = tablename;
+
+    $('#ranking').DataTable().destroy();
+    loadTable();
+}
+
+var band_arr = ["LF/VLF","160m","80m","60m","40m","30m","20m","17m","15m","12m","10m","6m","4m","2m","70cm","23cm"];
+
+function createBandselRadios()
+{
+    for(band=0; band<16; band++)
+    {
+        createRadiobutton("cdid"+band,"radiodiv",band_arr[band],band);
+    }
+    document.getElementById("cdid4").checked = true;
+}
+
+</script>
+
+<div id="headline" class="header"></div>
+<script>
+    printHeader_simple();
+</script>
+<div id="untertitel" class="untertitel_rank" style="width:1200px">KB9AMG's 2way ranking (http://mardie4.100webspace.net/2_way_wspr_reports/index.html)</div><br>
+<div class="wsprmain" id="wsprmain">
+    <div class="panel" id="panel1">
+        <table id="ranking" class="cell-border" style="width:100%">
+            <thead>
+                <tr>
+                <th>Rank</th>
+                <th>Spots</th>
+                <th>Callsign</th>
+                <th>Locator</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <div class="panel" id="panel2">
+        <div class="untertitel_top">
+        TOP Results
+        </div>
+        <div>
+            <table id="topranking" class="cell-border" style="width:100%">
+                <thead>
+                    <tr>
+                    <th>ID</th>
+                    <th>Band</th>
+                    <th>Rank</th>
+                    <th>Spots</th>
+                    <th>Callsign</th>
+                    <th>Locator</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+        <br><br>
+        <div id="radiodiv">
+        </div>
+    </div>
+</div>
+
+<a id="footline"></a>
+<script>footer();</script>
+
+</body>
+</html>

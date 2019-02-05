@@ -1,0 +1,574 @@
+<!doctype html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>U02-WebWSPR</title>
+<link rel="icon" href="/favicon.ico?" type="image/x-icon">
+<script type="text/javascript" src="jquery-3.3.1.js"></script>
+<script type="text/javascript" src="jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="wspr_js.js"></script>
+<link rel="stylesheet" type="text/css" href="jquery.dataTables.min.css">
+<link rel="stylesheet" type="text/css" href="wspr_style.css">
+
+<style>
+#setuptab {
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 800px;
+}
+
+#setuptab td, #setuptab th {
+  border: 2px solid #ddd;
+  padding: 8px;
+}
+
+#setuptab tr:nth-child(even){background-color: #f2f2f2;}
+
+#setuptab tr:hover {background-color: #ddd;}
+
+#setuptab th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #4CAF50;
+  color: white;
+}
+
+.setup_title
+{
+    color: #0000ff;
+    font-weight: bold;
+}
+
+.setup_info
+{
+    font-size: 12px;
+}
+
+.rightbut
+{
+    text-align: right;
+    display: inline-block; 
+    width: 100%;
+}
+
+.containerbut
+{
+    display: flex;
+}
+
+</style>
+
+</head>
+
+<body>
+<script>
+window.onload = start;
+var interval_id;
+
+function start()
+{
+    // to avoid caching the config script must be loaded with a random parameter
+    // then do some delay befor the values are used
+    setVisibility();
+    
+    addScript("phpdir/wsprconfig.js?"+ (new Date()).getTime());
+    setInterval(CurrentDate, 1000);
+    
+    // wait until above script has been loaded
+    interval_id = setInterval(loadFields, 1000);
+}
+
+function addScript( src ) {
+  var s = document.createElement('script');
+  s.setAttribute( 'src', src );
+  document.body.appendChild( s );
+}
+
+function loadFields()
+{
+    loadTRXlist();
+    
+    clearInterval(interval_id);
+
+    document.getElementById('call').value= config.call;
+    document.getElementById('qthloc').value= config.qthloc;
+    document.getElementById('txmode').value= config.txmode;
+    document.getElementById('civ_adr').value= config.civ_adr;
+    document.getElementById('txpower').value= config.txpower;
+    document.getElementById('txoffset').value= config.txoffset;
+    document.getElementById('autoWF').value= config.autoWF;
+    document.getElementById('levelWF').value= config.levelWF;
+    document.getElementById('gainWF').value= config.gainWF;
+    document.getElementById('midHF').value= config.midHF;
+    document.getElementById('call_ur1').value= config.call_ur1;
+    document.getElementById('call_ur2').value= config.call_ur2;
+    document.getElementById('call_ur3').value= config.call_ur3;
+    document.getElementById('call_ur4').value= config.call_ur4;
+    document.getElementById('call_ur5').value= config.call_ur5;
+    document.getElementById('secondsPerLine').value= config.secondsPerLine;
+    document.getElementById('FrequencyLeft').value= config.FrequencyLeft;
+    document.getElementById('FrequencyRight').value= config.FrequencyRight;
+    document.getElementById('webtitle').value= config.webtitle;
+    document.getElementById('dds_txpwr').value= config.dds_txpwr;
+    document.getElementById('dds_cal').value= config.dds_cal;
+    document.getElementById('dds_if').value= config.dds_if;
+    //document.getElementById('hamlib_trx').value= config.hamlib_trx; // this is done just after reloading the TRX list, see below
+    
+    setVisibility();
+    setRBs();
+}
+
+var xmlHttpObject = new XMLHttpRequest();
+function loadTRXlist()
+{
+    // load the hamlib transceiver list file
+    xmlHttpObject.open('get',"/phpdir/trx.lst?cb="+ (new Date()).getTime());
+    xmlHttpObject.onreadystatechange = trxlisthandler;
+    xmlHttpObject.send(null);
+    return false;
+}
+
+function trxlisthandler()
+{
+    if (xmlHttpObject.readyState == 4)
+    {
+        // Gesamte Datei in Zeilen aufgeteilt
+        var lines = xmlHttpObject.responseText.split('\n');
+        // fill the lines array into the selection "hamlib_trx"
+        selectList = document.getElementById('hamlib_trx');
+        for(var i = 0; i < lines.length; i++) {
+            if(lines[i].length > 3)
+            {
+                var option = document.createElement("option");
+                option.value = lines[i];
+                option.text = lines[i];
+                selectList.appendChild(option);
+            }
+        }
+        document.getElementById('hamlib_trx').value= config.hamlib_trx;
+    }
+}
+
+function setRBs()
+{
+    var mode = config.call_ur_sel;
+    
+    document.getElementById('call_ur1_sel').checked = (mode == "c1");
+    document.getElementById('call_ur2_sel').checked = (mode == "c2");
+    document.getElementById('call_ur3_sel').checked = (mode == "c3");
+    document.getElementById('call_ur4_sel').checked = (mode == "c4");
+    document.getElementById('call_ur5_sel').checked = (mode == "c5");
+}
+
+function setVisibility()
+{
+    var txmode = document.getElementById('txmode').value;
+    
+    if(txmode == "undefined" || txmode == 0)
+    {
+        // show ICOM rows
+        document.getElementById("row_icom").style.display = "none";
+        document.getElementById("row_u02dds").style.display = "none";
+        document.getElementById("row_u02dds1").style.display = "none";
+        document.getElementById("row_u02dds2").style.display = "none";
+        document.getElementById("row_hamlib").style.display = "none";
+    }
+    if(txmode == 1)
+    {
+        // show ICOM rows
+        document.getElementById("row_icom").style.display = "table-row";
+        document.getElementById("row_u02dds").style.display = "none";
+        document.getElementById("row_u02dds1").style.display = "none";
+        document.getElementById("row_u02dds2").style.display = "none";
+        document.getElementById("row_hamlib").style.display = "none";
+    }
+    if(txmode == 2)
+    {
+        // show U02-DDS rows
+        document.getElementById("row_icom").style.display = "none";
+        document.getElementById("row_u02dds").style.display = "table-row";
+        document.getElementById("row_u02dds1").style.display = "table-row";
+        document.getElementById("row_u02dds2").style.display = "table-row";
+        document.getElementById("row_hamlib").style.display = "none";
+    }
+    if(txmode == 3)
+    {
+        // show RTSDTR
+        document.getElementById("row_icom").style.display = "none";
+        document.getElementById("row_u02dds").style.display = "none";
+        document.getElementById("row_u02dds1").style.display = "none";
+        document.getElementById("row_u02dds2").style.display = "none";
+        document.getElementById("row_hamlib").style.display = "none";
+    }
+    if(txmode == 4)
+    {
+        // show HAMLIB rows
+        document.getElementById("row_icom").style.display = "none";
+        document.getElementById("row_u02dds").style.display = "none";
+        document.getElementById("row_u02dds1").style.display = "none";
+        document.getElementById("row_u02dds2").style.display = "none";
+        document.getElementById("row_hamlib").style.display = "table-row";
+    }
+}
+
+
+</script>
+
+
+<div id="headline" class="header"></div>
+<script>
+    printHeader_simple();
+</script>
+<form action="/wsprconfighandler.php" method="post" enctype="multipart/form-data">
+<table border="1" id="setuptab">
+    <tr>
+        <td colspan="3" class="setup_title">
+            Authentication
+        </td>
+    </tr>
+    <tr>
+        <td class="setup_text">
+            Password:
+        </td>
+        <td colspan="2">
+            <input type="text" name="password" id="password" value="">
+        </td>
+    </tr>
+    
+    <!--  personal Data -->
+    <tr>
+        <td colspan="3" class="setup_title">
+            Personal Data
+        </td>
+    </tr>
+    <tr>
+        <td class="setup_text">
+            Callsign:
+        </td>
+        <td colspan="2">
+            <input type="text" name="call" id="call" style="text-transform:uppercase" oninput="this.value = this.value.replace(/[^0-9A-Za-z\/]/g, '').replace(/(\..*)\./g, '$1');">
+        </td>
+    </tr>
+    <tr>
+        <td class="setup_text">
+            QTH Locator:
+        </td>
+        <td>
+            <input type="text" name="qthloc" id="qthloc" style="text-transform:uppercase" oninput="this.value = this.value.replace(/[^0-9A-Za-z]/g, '').replace(/(\..*)\./g, '$1');">
+        </td>
+        <td class="setup_info">
+            enter full 6 digit locator (XXxxXX)
+        </td>
+    </tr>
+    
+    
+    <!--  WSPR -->
+    <tr>
+        <td colspan="3" class="setup_title">
+            WSPR Settings
+        </td>
+    </tr>
+    <tr>
+        <td class="setup_text">
+            TX Power [dBm]
+        </td>
+        <td>
+            <select id="txpower" name="txpower">
+            <script>
+                var select = document.getElementById("txpower");
+                for(i=60; i>=0; i--)
+                {
+                    var option = document.createElement('option');
+                    option.text = option.value = i;
+                    select.add(option, 0);
+                }
+            </script>
+            </select> 
+        </td>
+        <td class="setup_info">
+            30dBm=1W, 37dBm=5W
+        </td>
+    </tr>
+    <tr>
+        <td class="setup_text">
+            TX Freq.Offset [Hz]
+        </td>
+        <td>
+            <input type="text" name="txoffset" id="txoffset" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');">
+        </td>
+        <td class="setup_info">
+            min: 1400 max:1600 Hz
+        </td>
+    </tr>
+    
+    
+    
+    <!--  CAT -->
+     <tr>
+        <td colspan="3" class="setup_title">
+            CAT Settings
+        </td>
+    </tr>
+    <tr>
+        <td class="setup_text">
+            CAT mode
+        </td>
+        <td colspan="2">
+            <select id="txmode" name="txmode" onchange="setVisibility()">
+                <option value="0">OFF</option>
+                <option value="1">ICOM</option>
+                <option value="2">U02-DDS</option>
+                <option value="3">RTS/DTR-PTT</option>
+                <option value="4">HAMLIB</option>
+            </select> 
+        </td>
+    </tr>
+
+    <tr id="row_icom">
+        <td class="setup_text">
+            ICOM CIV Address
+        </td>
+        <td>
+            <input type="text" name="civ_adr" id="civ_adr">
+        </td>
+        <td class="setup_info">
+            enter in HEX, i.e.: 94h
+        </td>
+    </tr>
+    <tr id="row_u02dds">
+        <td class="setup_text">
+            U02-DDS output level
+        </td>
+        <td>
+            <input type="text" name="dds_txpwr" id="dds_txpwr" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');">
+        </td>
+        <td class="setup_info">
+            % (0=min, 1000=max)
+        </td>
+    </tr>
+    <tr id="row_u02dds1">
+        <td class="setup_text">
+            U02-DDS Calibration
+        </td>
+        <td>
+            <input type="text" name="dds_cal" id="dds_cal" oninput="this.value = this.value.replace(/[^0-9\-]/g, '').replace(/(\..*)\./g, '$1');">
+        </td>
+        <td class="setup_info">
+            1 step = 100ppm (0=default, no calibration)
+        </td>
+    </tr>
+    <tr id="row_u02dds2">
+        <td class="setup_text">
+            U02-DDS Rx:IF
+        </td>
+        <td>
+            <input type="text" name="dds_if" id="dds_if" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');">
+        </td>
+        <td class="setup_info">
+            IF frequency of a receiver
+        </td>
+    </tr>
+    <tr id="row_hamlib">
+        <td class="setup_text">
+            Transceiver
+        </td>
+        <td>
+            <select id="hamlib_trx" name="hamlib_trx">
+            </select> 
+        </td>
+        <td class="setup_info">
+            select your transceiver model
+        </td>
+    </tr>
+    
+    <!--  Waterfall -->
+    <tr>
+        <td colspan="3" class="setup_title">
+            Waterfall Settings
+        </td>
+    </tr>
+    <tr>
+        <td class="setup_text">
+            Automode on/off
+        </td>
+        <td colspan="2">
+            <select id="autoWF" name="autoWF">
+                <option value="0">OFF</option>
+                <option value="1">ON</option>
+            </select> 
+        </td>
+    </tr>
+    <tr>
+        <td class="setup_text">
+            Level
+        </td>
+        <td>
+            <input type="text" name="levelWF" id="levelWF" oninput="this.value = this.value.replace(/[^0-9\-]/g, '').replace(/(\..*)\./g, '$1');">
+        </td>
+        <td class="setup_info">
+            AUTOmode=OFF: setting for low levels (default -70)<br>
+            AUTOmode=ON:  default:0, higher=darker background
+        </td>
+    </tr>
+    <tr>
+        <td class="setup_text">
+            Gain
+        </td>
+        <td>
+            <input type="text" name="gainWF" id="gainWF" oninput="this.value = this.value.replace(/[^0-9\-]/g, '').replace(/(\..*)\./g, '$1');">
+        </td>
+        <td class="setup_info">
+            AUTOmode=OFF: setting for high levels (default:50)<br>
+            AUTOmode=ON:  default:0, higher=brighter signal traces 
+        </td>
+    </tr>
+    <tr>
+        <td class="setup_text">
+            Y-Averaging
+        </td>
+        <td>
+            <input type="text" name="midHF" id="midHF" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');">
+        </td>
+        <td class="setup_info">
+            pixel averaging Y-axis (values: 1...20)
+        </td>
+    </tr>
+    <tr>
+        <td class="setup_text">
+            Seconds per Line
+        </td>
+        <td>
+            <select id="secondsPerLine" name="secondsPerLine">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="4">4</option>
+            </select>
+        </td>
+        <td class="setup_info">
+            number of seconds for one pixel lne
+        </td>
+    </tr>
+    <tr>
+        <td class="setup_text">
+            left margin QRG
+        </td>
+        <td>
+            <input type="text" name="FrequencyLeft" id="FrequencyLeft" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');">
+        </td>
+        <td class="setup_info">
+            left margin offet frequency (default: 1350 Hz)
+        </td>
+    </tr>
+    <tr>
+        <td class="setup_text">
+            right margin QRG
+        </td>
+        <td>
+            <input type="text" name="FrequencyRight" id="FrequencyRight" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');">
+        </td>
+        <td class="setup_info">
+            right margin offet frequency (default: 1650 Hz)
+        </td>
+    </tr>
+    
+    
+    <!--  Database -->
+    <tr>
+        <td colspan="3" class="setup_title">
+            Station for comparison
+        </td>
+    </tr>
+    <tr>
+        <td class="setup_text">
+            Callsign-1:
+        </td>
+        <td colspan="2">
+            <input type="text" name="call_ur1" id="call_ur1" style="text-transform:uppercase" oninput="this.value = this.value.replace(/[^0-9A-Za-z\/]/g, '').replace(/(\..*)\./g, '$1');">
+            <input type="radio" class="myradio" name="call_ur_sel" value="c1" id="call_ur1_sel">
+        </td>
+    </tr>
+    <tr>
+        <td class="setup_text">
+            Callsign-2:
+        </td>
+        <td colspan="2">
+            <input type="text" name="call_ur2" id="call_ur2" style="text-transform:uppercase" oninput="this.value = this.value.replace(/[^0-9A-Za-z\/]/g, '').replace(/(\..*)\./g, '$1');">
+            <input type="radio" class="myradio" name="call_ur_sel" value="c2" id="call_ur2_sel">
+        </td>
+    </tr>
+    <tr>
+        <td class="setup_text">
+            Callsign-3:
+        </td>
+        <td colspan="2">
+            <input type="text" name="call_ur3" id="call_ur3" style="text-transform:uppercase" oninput="this.value = this.value.replace(/[^0-9A-Za-z\/]/g, '').replace(/(\..*)\./g, '$1');">
+            <input type="radio" class="myradio" name="call_ur_sel" value="c3" id="call_ur3_sel">
+        </td>
+    </tr>
+    <tr>
+        <td class="setup_text">
+            Callsign-4:
+        </td>
+        <td colspan="2">
+            <input type="text" name="call_ur4" id="call_ur4" style="text-transform:uppercase" oninput="this.value = this.value.replace(/[^0-9A-Za-z\/]/g, '').replace(/(\..*)\./g, '$1');">
+            <input type="radio" class="myradio" name="call_ur_sel" value="c4" id="call_ur4_sel">
+        </td>
+    </tr>
+    <tr>
+        <td class="setup_text">
+            Callsign-5:
+        </td>
+        <td colspan="2">
+            <input type="text" name="call_ur5" id="call_ur5" style="text-transform:uppercase" oninput="this.value = this.value.replace(/[^0-9A-Za-z\/]/g, '').replace(/(\..*)\./g, '$1');">
+            <input type="radio" class="myradio" name="call_ur_sel" value="c5" id="call_ur5_sel">
+        </td>
+    </tr>
+    
+    <!--  Website -->
+    <tr>
+        <td colspan="3" class="setup_title">
+            Website Settings
+        </td>
+    </tr>
+    <tr>
+        <td class="setup_text">
+            Title:
+        </td>
+        <td>
+            <input type="text" name="webtitle" id="webtitle">
+        </td>
+        <td>
+        text displayed in the browser tab
+        </td>
+    </tr>
+    
+    <!--  Buttons -->
+    <tr>
+        <td colspan="3">
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <input type="submit" name="save" value="SAVE config">
+        </td>
+        <td colspan="2" class="setup_info">
+            write your data to the WSPR configuration
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <input type="submit" name="backup" value="Backup Config">
+        </td>
+        <td colspan="2" class="setup_info">
+            Restore Configuration:
+            <input type="file" name="fileToUpload" id="fileToUpload">
+            <input type="submit" value="Restore Config" name="upload">
+            
+        </td>
+    </tr>
+</table>
+</form>
+<a id="footline"></a>
+<script>footer();</script>
+</body>
+</html>

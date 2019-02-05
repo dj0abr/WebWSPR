@@ -1,0 +1,216 @@
+<!doctype html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>U02-WebWSPR</title>
+<link rel="icon" href="/favicon.ico?" type="image/x-icon">
+<script type="text/javascript" src="jquery-3.3.1.js"></script>
+<script type="text/javascript" src="jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="phpdir/wsprconfig.js?ver<%=DateTime.Now.Ticks.ToString()%>"></script>
+<script type="text/javascript" src="wspr_js.js"></script>
+<link rel="stylesheet" type="text/css" href="jquery.dataTables.min.css">
+<link rel="stylesheet" type="text/css" href="wspr_style.css">
+
+<style>
+
+
+/*  ========== two main panels, side by side ============= */
+.wsprmain 
+{
+    width: 1200px;
+    display: flex;
+    background-color: #e0e0e0;
+}
+
+.panel
+{
+    width: 1200px;
+    font-size: 12px;
+}
+
+/* make the table cells more compact */
+
+table.cell-border tbody th, table.cell-border tbody td {
+    padding: 3px;   /* row height */
+    padding-left: 25px;
+    padding-right: 25px;
+    white-space: nowrap;
+}
+
+.ui.table thead {
+    display: none !important;
+}
+
+</style>
+
+</head>
+
+<body>
+<script>
+window.onload = start;
+
+function start()
+{
+    loadTable();
+    
+    setInterval(CurrentDate, 1000);
+    setInterval(reloadData, 4000);
+    
+    document.getElementById("header_call").innerHTML = config.call + " " + config.qthloc;
+}
+
+// Draw Table and update via Ajax
+var CallsignTable;
+
+function loadTable() 
+{
+    CallsignTable = $('#actspots').DataTable( 
+        {
+            ajax:    ({
+                        url: "JSON_STAT.txt",
+                     }),
+            columns:        [
+                                { data: 'DESCR' },
+                                { data: 'CALL1' },
+                                { data: 'CALL2' },
+                            ],
+            columnDefs:     [
+                                { targets : [1,2],  // Date
+                                    render : function(data, type, row) 
+                                    {
+                                        if(data.length != 10) return data;
+                                        //if(row!=0 && row != 1) return data;
+                                        // convert database date to UTC
+                                        // FROM_UNIXTIME(a.datetime*10-62135596800,'%Y.%m.%d %H:%i')
+                                        var dsec = data * 10 - 62135596800;
+                                        var d = new Date(dsec * 1000);
+                                        return d.getUTCFullYear() + "." + to2(d.getUTCMonth()+1) + "." + d.getUTCDate()  + " " + to2(d.getUTCHours()) + ":" + to2(d.getUTCMinutes());
+                                    }     
+                                },
+                                { "className": "dt-right", "targets": 1 },
+                                { "className": "dt-right", "targets": 2 },
+                            ],
+            scrollY:        650,	// vertical size
+            scrollX:        200,
+            scrollCollapse: true,
+            scroller:       true,
+	    	pageLength:     250,		// number of displayed line by default
+            bLengthChange:  false,
+            searching:      false,
+            bSort:          false,
+            fnRowCallback: function (nRow, aData, iDisplayIndex, iDisplayIndexFull) 
+                            { 
+                                var white1 = '#ffffff';
+                                var white2 = '#f8f8f8';
+                                
+                                var green = '#e0ffe0';
+                                
+                                // alternate lines
+                                if(iDisplayIndex & 1)
+                                {
+                                    // darker lines
+                                    // make time/call darker
+                                    $("td:eq(0)", nRow).css('background', white2);
+                                    $("td:eq(1)", nRow).css('background', white2);
+                                    $("td:eq(2)", nRow).css('background', white2);
+                                    
+                                    green = '#d8f8d8';
+                                }
+                                else
+                                {
+                                    // make time/call darker
+                                    $("td:eq(0)", nRow).css('background', white1);
+                                    $("td:eq(1)", nRow).css('background', white1);
+                                    $("td:eq(2)", nRow).css('background', white1);
+                                }
+                                
+                                // make better values green
+                                if(iDisplayIndex < 2) return;
+                                
+                                if(Number(aData['CALL1']) > Number(aData['CALL2']))
+                                    $("td:eq(1)", nRow).css('background', green);
+                                
+                                if(Number(aData['CALL1']) < Number(aData['CALL2']))
+                                    $("td:eq(2)", nRow).css('background', green);
+                                
+                                // format distance
+                                if(iDisplayIndex == 6 || iDisplayIndex == 7)
+                                {
+                                    var km=0;
+                                    
+                                    if(aData['CALL1'] >=1000)
+                                        km = ((aData['CALL1'] / 1000).toFixed(3)).toString();
+                                    else
+                                        km = aData['CALL1'];
+
+                                    $("td:eq(1)", nRow).text(km + " km");
+                                    
+                                    if(aData['CALL2'] >=1000)
+                                        km = ((aData['CALL2'] / 1000).toFixed(3)).toString();
+                                    else
+                                        km = aData['CALL2'];
+
+                                    $("td:eq(2)", nRow).text(km + " km");
+                                }
+                                
+                                // format snr
+                                if(iDisplayIndex == 8 || iDisplayIndex == 9)
+                                {
+                                    $("td:eq(1)", nRow).text(Number(aData['CALL1']).toFixed(1) + " dB");
+                                    $("td:eq(2)", nRow).text(Number(aData['CALL2']).toFixed(1) + " dB");
+                                }
+                            },
+        }
+    );
+    
+    $.fn.dataTable.ext.errMode = 'none';    // supress ajax error message if table not exists
+    document.getElementById("untertitel1").innerHTML = config.call;
+    if(config.call_ur_sel == 'c1') document.getElementById("untertitel2").innerHTML = config.call_ur1;
+    if(config.call_ur_sel == 'c2') document.getElementById("untertitel2").innerHTML = config.call_ur2;
+    if(config.call_ur_sel == 'c3') document.getElementById("untertitel2").innerHTML = config.call_ur3;
+    if(config.call_ur_sel == 'c4') document.getElementById("untertitel2").innerHTML = config.call_ur4;
+    if(config.call_ur_sel == 'c5') document.getElementById("untertitel2").innerHTML = config.call_ur5;
+}
+
+function reloadData()
+{
+    CallsignTable.ajax.reload(null,false);
+}
+
+function clearTable()
+{
+    CallsignTable.clear().draw();
+    
+}
+
+</script>
+
+<div id="headline" class="header"></div>
+<script>
+    printHeader();
+    setRadiobuttons(2);
+</script>
+<div id="untertitel" class="untertitel" style="width:1200px"></div>
+<script>
+    var ut1wid = "540px";
+    var ut2wid = "380px";
+    printUntertitel();
+</script>
+
+<div class="untertitel" style="width:1200px">
+    <div class="untertitel0" id="untertitel0" style="width:300px"></div>
+    <div class="untertitel1" id="untertitel1" style="width:320px"></div>
+    <div class="untertitel2" id="untertitel2" style="width:400px"></div>
+</div>
+
+<div class="wsprmain" id="wsprmain">
+    <div class="panel" id="panel1">
+        <table id="actspots" class="cell-border" style="width:100%">
+        </table>
+    </div>
+</div>
+
+<a id="footline"></a>
+<script>footer();</script>
+
+</body>
+</html>

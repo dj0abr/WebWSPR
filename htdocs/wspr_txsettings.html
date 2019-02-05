@@ -1,0 +1,691 @@
+<!doctype html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>U02-WebWSPR</title>
+<link rel="icon" href="/favicon.ico?" type="image/x-icon">
+<script type="text/javascript" src="jquery-3.3.1.js"></script>
+<script type="text/javascript" src="jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="phpdir/wsprconfig.js"></script>
+<script type="text/javascript" src="wspr_js.js"></script>
+<link rel="stylesheet" type="text/css" href="jquery.dataTables.min.css">
+<link rel="stylesheet" type="text/css" href="wspr_style.css">
+
+<style>
+/*  main panel */
+
+.row_header
+{
+    width: 1200px;
+    height: 29px;
+    display: flex;
+}
+
+.row_spacer
+{
+    width: 200px;
+    height: 36px;
+    display: flex;
+    background-color: #ffffe8;
+    padding-top: 7px;
+}
+
+.row_spacer1
+{
+    width: 1200px;
+    height: 29px;
+    display: flex;
+}
+
+.row_spacer2
+{
+    width: 1200px;
+    height: 10px;
+    display: flex;
+}
+
+.row_rx
+{
+    width: 1200px;
+    height: 29px;
+    display: flex;
+    background-color: #e8ffe8;
+}
+
+.row_tx
+{
+    width: 1200px;
+    height: 29px;
+    display: flex;
+    background-color: #ffe8e8;
+}
+
+.row_timerleftspace
+{
+    width: 300px;
+}
+
+.row_timerheader
+{
+    width: 900px;
+    height: 29px;
+    display: flex;
+}
+
+.row_timersel
+{
+    width: 900px;
+    height: 43px;
+    display: flex;
+}
+
+.col_title
+{
+    width: 70px;
+    height: 25px;
+    text-align: center;
+    font-weight: 900;
+    
+}
+
+.col_title_rx
+{
+    width: 70px;
+    background-color: #e8ffe8;
+    text-align: center;
+    font-weight: 700;
+    padding-top: 3px;
+}
+
+.col_title_tx
+{
+    width: 70px;
+    background-color: #ffe8e8;
+    text-align: center;
+    font-weight: 700;
+    padding-top: 3px;
+}
+
+.col_title_sp
+{
+    width: 70px;
+    background-color: #ffffe8;
+    text-align: center;
+    font-weight: 700;
+    padding-top: 3px;
+}
+
+.horSpacer
+{
+    width: 2px;
+    height: 25px;
+}
+
+.col_band_title
+{
+    width: 70px;
+    height: 25px;
+    text-align: center;
+    font-weight: 700;
+    padding-top: 3px;
+}
+
+.col_band_rx
+{
+    width: 70px;
+    height: 25px;
+    background-color: #e8ffe8;
+    text-align: center;
+    border:1px solid #c0c0c0;
+    font-weight: 900;
+}
+
+.col_band_tx
+{
+    width: 70px;
+    height: 25px;
+    background-color: #ffe8e8;
+    text-align: center;
+    border:1px solid #c0c0c0;
+    font-weight: 900;
+    padding-top: 3px;
+}
+
+.col_title_timer
+{
+    width: 150px;
+    height: 25px;
+    text-align: center;
+    font-weight: 900;
+    background-color: grey;
+    color: white;
+}
+
+.col_timer
+{
+    width: 150px;
+    height: 35px;
+    text-align: center;
+    font-weight: 700;
+    padding-top: 7px;
+    background-color: white;
+    border:1px solid #c0c0c0;
+}
+
+.wsprmain
+{
+    font-weight: 700;
+    width: 1200px;
+    height: 600px;
+}
+
+.save_button
+{
+    background:    #f3f3f3;
+    background:    -webkit-linear-gradient(#f3f3f3, #999999);
+    background:    linear-gradient(#f3f3f3, #999999);
+    border:        2px solid #cc0000;
+    border-radius: 5px;
+    padding:       8px 20px;
+    color:         #ffffff;
+    display:       inline-block;
+    font:          normal 700 18px/1 "Noto Sans", sans-serif;
+    text-align:    center;
+    text-shadow:   1px 1px #000000;
+}
+
+.maprow
+{
+    width: 1200px;
+    height: 30px;
+    display: flex;
+}
+
+
+.mapcolrx
+{
+    width: 38px;
+    height: 26px;
+    background-color: #c0ffc0;
+    border:1px solid #000000;
+    border-radius: 2px;
+    margin-top: 1px;
+    margin-left: 1px;
+    font: normal 600 10px/1 "Noto Sans", sans-serif;
+    padding:3px;
+}
+
+.mapcoltx
+{
+    width: 38px;
+    height: 26px;
+    background-color: #ff8080;
+    border:1px solid #000000;
+    border-radius: 2px;
+    margin-top: 1px;
+    margin-left: 1px;
+    font: normal 600 10px/1 "Noto Sans", sans-serif;
+    padding:3px;
+}
+
+.mapcolnow
+{
+    width: 38px;
+    height: 26px;
+    background-color: #ffff40;
+    border:1px solid #000000;
+    border-radius: 2px;
+    margin-top: 1px;
+    margin-left: 1px;
+    font: normal 600 10px/1 "Noto Sans", sans-serif;
+    padding:3px;
+}
+
+.mapcolnowtx
+{
+    width: 38px;
+    height: 26px;
+    background-color: #ffd080;
+    border:1px solid #000000;
+    border-radius: 2px;
+    margin-top: 1px;
+    margin-left: 1px;
+    font: normal 600 10px/1 "Noto Sans", sans-serif;
+    padding:3px;
+}
+
+.mapcolrxtimer
+{
+    width: 38px;
+    height: 26px;
+    background-color: #40ff40;
+    border:1px solid #000000;
+    border-radius: 2px;
+    margin-top: 1px;
+    margin-left: 1px;
+    font: normal 600 10px/1 "Noto Sans", sans-serif;
+    padding:3px;
+}
+
+.mapcoltxtimer
+{
+    width: 38px;
+    height: 26px;
+    background-color: #ff0000;
+    border:1px solid #000000;
+    border-radius: 2px;
+    margin-top: 1px;
+    margin-left: 1px;
+    font: normal 600 10px/1 "Noto Sans", sans-serif;
+    padding:3px;
+}
+
+</style>
+</head>
+
+<body>
+<script>
+window.onload = start;
+
+var interrv;
+
+var xmlHttpObject = new XMLHttpRequest();
+
+function start()
+{
+    create_checkboxes();
+    setInterval(CurrentDate, 1000);
+    interrv = setInterval(loadStatus, 1000); // try to load the data until the file txsetting.txt is available
+}
+
+function loadStatus()
+{
+    xmlHttpObject.open('get',"phpdir/txsettings.txt?cb="+ (new Date()).getTime());
+    xmlHttpObject.onreadystatechange = fileHandler;
+    xmlHttpObject.send(null);
+}
+
+function fileHandler()
+{
+    if (xmlHttpObject.readyState == 4)
+    {
+        // Gesamte Datei in Zeilen aufgeteilt
+        var lines = xmlHttpObject.responseText.split('\n');
+        if(lines.length < 700)
+        {
+            // txsettings.txt does not exist, ignore the error message
+            return;
+        }
+        // now select the controls according the values in the lines
+        // rx and tx check boxes
+        for(i=0; i<=16; i++)
+        {
+            var b1 = ("00" + i).slice(-2);
+            document.getElementById("cbrx"+b1).checked = (lines[i+1]==1?true:false);
+            document.getElementById("cbtx"+b1).checked = (lines[i+19]==1?true:false);
+        }
+        // main interval selection
+        document.getElementById("actintv").value = lines[37];
+        // Timer
+        for(timer=0; timer<6; timer++)
+        {
+            // onoff
+            document.getElementById("cbtm"+("00" + timer).slice(-2)).checked = (lines[timer+39]==1?true:false);
+            // start time
+            var starttime_min = lines[timer+46];
+            var starttime_hour = parseInt(starttime_min / 60);
+            starttime_min -= parseInt(starttime_hour * 60);
+            var starttime = ("00" + starttime_hour).slice(-2)+"h:"+("00" + starttime_min).slice(-2)+"m";
+            document.getElementById("timstart"+timer).value = starttime;
+            // end time
+            var endtime_min = lines[timer+53];
+            var endtime_hour = parseInt(endtime_min / 60);
+            endtime_min -= parseInt(endtime_hour * 60);
+            var endtime = ("00" + endtime_hour).slice(-2)+"h:"+("00" + endtime_min).slice(-2)+"m";
+            document.getElementById("timend"+timer).value = endtime;
+            document.getElementById("timint"+timer).value = lines[timer+60];
+            
+            var band = lines[timer+67];
+            var sband = band;
+            if(band.includes("23") || band.includes("70")) sband += "cm";
+            else sband += "m";
+            document.getElementById("timband"+timer).value = sband;
+            
+            var txnext_band = lines[timer+73];
+            if(txnext_band>=0 && txnext_band<=16)
+            {
+                txnext_band = ("00" + txnext_band).slice(-2);
+                document.getElementById("cbtxnext"+txnext_band).checked = true;
+            }
+        }
+        clearInterval(interrv);
+        drawMap(lines);
+    }
+    else
+    {
+        // txsettings.txt does not exist
+        // set GUI to default
+        // rx and tx check boxes to default RX:40m, none TX
+        
+        // setting the default makes the checkboxes blinking on slow SBCs, so we don't use it
+        /*for(i=0; i<=16; i++)
+        {
+            var b1 = ("00" + i).slice(-2);
+            if(i == 5)
+                document.getElementById("cbrx"+b1).checked = true;
+            else
+                document.getElementById("cbrx"+b1).checked = false;
+            document.getElementById("cbtx"+b1).checked = false;
+        }
+        // main interval selection, default 10min
+        document.getElementById("actintv").value = 10;
+        // Timer, default OFF
+        for(timer=0; timer<6; timer++)
+        {
+            // onoff
+            document.getElementById("cbtm"+("00" + timer).slice(-2)).checked = false;
+            document.getElementById("timstart"+timer).value = "00h:00m";
+            document.getElementById("timend"+timer).value = "01h:00m";
+            document.getElementById("timint"+timer).value = 10;
+            document.getElementById("timband"+timer).value = "40m";
+            
+            for(var txnext_band=0; txnext_band<=16; txnext_band++)
+            {
+                txnext_band = ("00" + txnext_band).slice(-2);
+                document.getElementById("cbtxnext"+txnext_band).checked = false;
+            }
+        }*/
+    }
+}
+
+/*
+The TXRX map has 24 rows, one row for one hour a day
+each row contains 30 intervals
+the txrx map in txsettings.txt starts at line index 74 (beginning at 0)
+each line contains: RX-band, just print it to the div element
+(index:73 = txnext band)
+*/
+function drawMap(lines)
+{
+    // make the row divs, horizontal stripes
+    for(row=0; row<24; row++)
+    {
+        createDiv("maprow"+row, "maprow", "interval_map", "");
+    }
+    
+    var d = new Date(); 
+    var acth = d.getUTCHours();
+    var actmin = d.getUTCMinutes();
+    var col = 0;
+    
+    // now create 30 divs for each row
+    var lidx = 74;
+    for(row=0; row<24; row++)
+    {
+        for(col=0; col<30; col++)
+        {
+            var elem_time = ('0'+row).slice(-2) + ":" + ('0'+col*2).slice(-2);
+            var text = lines[lidx++];
+            var colclass = "mapcolrx";
+            if(text.includes("TX")) colclass = "mapcoltx";
+            if(row == acth && col==(actmin>>1)) 
+            {
+                if(text.includes("TX")) colclass = "mapcolnowtx";
+                else colclass = "mapcolnow";
+            }
+            var bandnum = text.substring(3);
+            var ext = "";
+            if(bandnum >= 10000)
+            {
+                bandnum /= 10000;
+                bandnum = band_arr_d[bandnum];
+                ext = "m";
+                if(bandnum == 70 || bandnum == 23) ext = "cm";
+                if(colclass == "mapcolrx") colclass = "mapcolrxtimer";
+                else colclass = "mapcoltxtimer";
+            }
+            else
+                bandnum = band_arr[bandnum];
+                
+            text = bandnum.toString() + ext;
+            createDiv("mapcol"+row+col, colclass, "maprow"+row, elem_time + "<br>" + text);
+        }
+    }
+}
+
+function createDiv(elemid, elemclass, parentelem, text)
+{
+    var div = document.createElement("div");
+    div.className = elemclass;
+    if(elemid.length > 0)
+        div.id = elemid;
+    if(text.length > 0)
+        div.innerHTML = text;
+    document.getElementById(parentelem).appendChild(div);
+}
+
+function createCheckbox(cbID, parentElem)
+{
+    var chkbox = document.createElement("INPUT");
+    chkbox.setAttribute("type", "checkbox");
+    chkbox.setAttribute("name", cbID);
+    chkbox.id = cbID;
+    chkbox.setAttribute("onclick", "OnChangeCheckbox(this)");
+    document.getElementById(parentElem).appendChild(chkbox);
+}
+
+function createRadiobutton(cbID, parentElem,val)
+{
+    var radiobut = document.createElement("INPUT");
+    radiobut.setAttribute("type", "radio");
+    radiobut.setAttribute("name", "txnextradio");
+    radiobut.setAttribute("value", val);
+    radiobut.id = cbID;
+    //radiobut.setAttribute("onclick", "OnChangeCheckbox(this)");
+    document.getElementById(parentElem).appendChild(radiobut);
+}
+
+var time_arr = [
+"00h:00m",
+"00h:30m",
+"01h:00m",
+"01h:30m",
+"02h:00m",
+"02h:30m",
+"03h:00m",
+"03h:30m",
+"04h:00m",
+"04h:30m",
+"05h:00m",
+"05h:30m",
+"06h:00m",
+"06h:30m",
+"07h:00m",
+"07h:30m",
+"08h:00m",
+"08h:30m",
+"09h:00m",
+"09h:30m",
+"10h:00m",
+"10h:30m",
+"11h:00m",
+"11h:30m",
+"12h:00m",
+"12h:30m",
+"13h:00m",
+"13h:30m",
+"14h:00m",
+"14h:30m",
+"15h:00m",
+"15h:30m",
+"16h:00m",
+"16h:30m",
+"17h:00m",
+"17h:30m",
+"18h:00m",
+"18h:30m",
+"19h:00m",
+"19h:30m",
+"20h:00m",
+"20h:30m",
+"21h:00m",
+"21h:30m",
+"22h:00m",
+"22h:30m",
+"23h:00m",
+"23h:30m",
+];
+var interval_arr = [0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,42,44,46,48,50,52,54,56,58,60];
+var band_arr = ["2200m","630m","160m","80m","60m","40m","30m","20m","17m","15m","12m","10m","6m","4m","2m","70cm","23cm"];
+var band_arr_d = [2200,630,160,80,60,40,30,20,17,15,12,10,6,4,2,70,23];
+
+function createListbox(lbID, parentElem,valarr)
+{
+    var selectList = document.createElement("select");
+    selectList.id = lbID;
+    selectList.name = lbID;
+    selectList.style.height="30px";
+    document.getElementById(parentElem).appendChild(selectList);
+
+    //Create and append the options
+    for (var i = 0; i < valarr.length; i++) {
+        var option = document.createElement("option");
+        option.value = valarr[i];
+        option.text = valarr[i];
+        selectList.appendChild(option);
+    }
+}
+
+function create_checkboxes()
+{
+    // RXTX selection: 4 rows
+    createDiv("row_header","row_header","wsprmain","");
+    createDiv("row_rx","row_rx","wsprmain","");
+    createDiv("row_tx","row_tx","wsprmain","");
+    createDiv("row_spacer1","row_spacer2","wsprmain","");
+    createDiv("row_txnext","row_tx","wsprmain","");
+    createDiv("row_spacer1","row_spacer2","wsprmain","");
+    createDiv("row_spacer","row_spacer","wsprmain","");
+    createDiv("row_spacer1","row_spacer1","wsprmain","");
+    
+    // rows for the timer
+    for(timer=0; timer < 6; timer++)
+    {
+        if(timer == 0)
+            createDiv("timer"+timer+"header","row_timerheader","wsprmain","");
+        createDiv("timer"+timer+"selection","row_timersel","wsprmain","");
+    }
+    
+    // columns in each row_header
+    // title
+    createDiv("","col_title","row_header","");
+    createDiv("","col_title_rx","row_rx","RX");
+    createDiv("","col_title_tx","row_tx","TX");
+    createDiv("","col_title_sp","row_spacer","Interval");
+    createDiv("","col_title_tx","row_txnext","TXnext");
+    
+    // Listbox for actual interval
+    createDiv("","horSpacer", "row_spacer","");
+    createListbox("actintv", "row_spacer",interval_arr);
+    createDiv("","col_title_sp","row_spacer","min");
+    
+    // 17 bands
+    for(band=0; band<bandindex.length; band++)
+    {
+        createDiv("","horSpacer", "row_header","");
+        createDiv("","col_band_title","row_header",bandName(band));
+        
+        createDiv("","horSpacer", "row_rx","");
+        var b1 = ("00" + band).slice(-2);
+        createDiv("br"+b1,"col_band_rx","row_rx","");
+        
+        createDiv("","horSpacer", "row_tx","");
+        createDiv("bt"+b1,"col_band_tx","row_tx","");
+        
+        createDiv("","horSpacer", "row_txnext","");
+        createDiv("btnext"+b1,"col_band_tx","row_txnext","");
+        
+        // put a checkbox in each band div
+        createCheckbox("cbrx"+b1, "br"+b1);
+        createCheckbox("cbtx"+b1, "bt"+b1);
+        createRadiobutton("cbtxnext"+b1, "btnext"+b1,band+1);
+    }
+    
+    // 6 Timers
+    for(timer=0; timer < 6; timer++)
+    {
+    
+        // Titles
+        if(timer == 0)
+        {
+            createDiv("","row_timerleftspace","timer"+timer+"header","");
+            createDiv("","col_title_timer","timer"+timer+"header","");
+            createDiv("","col_title_timer","timer"+timer+"header","ON/OFF");
+            createDiv("","col_title_timer","timer"+timer+"header","Start");
+            createDiv("","col_title_timer","timer"+timer+"header","End");
+            createDiv("","col_title_timer","timer"+timer+"header","Interval");
+            createDiv("","col_title_timer","timer"+timer+"header","Band");
+        }
+        
+        createDiv("","row_timerleftspace","timer"+timer+"selection","");
+        createDiv("","col_timer","timer"+timer+"selection","Timer-"+(timer+1)+" :");
+        // onoff column
+        createDiv("ctim"+timer,"col_timer","timer"+timer+"selection","");
+        createCheckbox("cbtm"+("00" + timer).slice(-2), "ctim"+timer);
+        // start col
+        createDiv("ctimst"+timer,"col_timer","timer"+timer+"selection","");
+        createListbox("timstart"+timer, "ctimst"+timer,time_arr);
+        // end col 
+        createDiv("ctimend"+timer,"col_timer","timer"+timer+"selection","");
+        createListbox("timend"+timer, "ctimend"+timer,time_arr);
+        // interval col 
+        createDiv("ctimint"+timer,"col_timer","timer"+timer+"selection","");
+        createListbox("timint"+timer, "ctimint"+timer,interval_arr);
+        // band col 
+        createDiv("ctimband"+timer,"col_timer","timer"+timer+"selection","");
+        createListbox("timband"+timer, "ctimband"+timer,band_arr);
+    }
+
+    return;
+}
+
+function OnChangeCheckbox (cb) 
+{
+    var text="";
+    var name = cb.name.substring(0,4);
+    var num = cb.name.substring(4);
+    if(name == "cbrx")
+    {
+        text = "RX " + bandName(Number(num));
+    }
+    if(name == "cbtx")
+    {
+        text = "TX " + bandName(Number(num));
+    }
+    if(name == "cbtm")
+    {
+        text = "Timer-" + num;
+    }
+}
+
+</script>
+
+<div id="headline" class="header"></div>
+<script>
+    printHeader_simple();
+</script>
+
+<form action="/wsprtxhandler.php" method="post" enctype="multipart/form-data">
+    <div class="UTtxsetup">RX / TX Band and Interval Settings</div>
+    <br>
+    <div class="wsprmain" id="wsprmain">
+    <input type="submit" name="save" class="save_button" value="SAVE SETTINGS">
+    &emsp;&emsp;&emsp;Password:
+    <input type="text" name="password" id="password" value=""><br><br>
+    </div>
+</form>
+<div class="UTtxsetup">RX / TX Interval Overview</div>
+<div id="interval_map"></div><br>
+<a id="footline"></a>
+<script>footer();</script>
+</body>
+</html>

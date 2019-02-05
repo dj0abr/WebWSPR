@@ -1,0 +1,411 @@
+Erzeugen der Spot-Vergleichstabelle
+===================================
+
+Ausgangstabelle, nur Zeitindex: 6368158980:
+-------------------------------------------
+select reporter,callsign from SPOTS where datetime=6368158980 and (reporter='DJ0ABR' or reporter='DH5RAE');
+
++----------+----------+
+| reporter | callsign |
++----------+----------+
+| DH5RAE   | 9A3SWO   |
+| DJ0ABR   | 9A3SWO   |
+| DJ0ABR   | DD0PD    |
+| DH5RAE   | DJ1DW    |
+| DH5RAE   | DK0EP    |
+| DJ0ABR   | DK0EP    |
+| DH5RAE   | DK9MS    |
+| DJ0ABR   | DK9MS    |
+| DH5RAE   | DL5LCR   |
+| DJ0ABR   | DL5LCR   |
+| DH5RAE   | F4HQJ    |
+| DJ0ABR   | F4HQJ    |
+| DH5RAE   | G4ZAL    |
+| DJ0ABR   | G4ZAL    |
+| DH5RAE   | G8AXA    |
+| DJ0ABR   | G8AXA    |
+| DH5RAE   | HB9DOZ   |
+| DJ0ABR   | HB9DOZ   |
+| DH5RAE   | M6NQJ    |
+| DH5RAE   | PA0O/P   |
+| DJ0ABR   | PA0O/P   |
+| DH5RAE   | PA0PZ    |
+| DJ0ABR   | PA0PZ    |
+| DH5RAE   | SM4OJ    |
++----------+----------+
+
+nur von DJ0ABR gehört:
+DD0PD
+nur von DH5RAE gehört:
+DJ1DW, M6NQJ, SM4OJ
+
+1. Schritt: 
+die Tabelle muss nach den gewünschten Calls und der Zeit vorgefiltert werden
+
+select * from SPOTS where datetime=6368158980 and (reporter='DJ0ABR' or reporter='DH5RAE');
+Ergebnis wie oben.
+Diese Vorfilterung wird als Subqueries in allen folgenden Abfragen anstelle einer Tabelle benutzt.
+
+2. Schritt:
+die gemeinsamen und die nur von DJ0ABR gehörten, auf Basis der oben vorgefilterten Tabelle:
+
+select a.datetime, a.reporter as C1,b.reporter as c2, a.callsign from (select * from SPOTS where datetime=6368158980 and (reporter='DJ0ABR' or reporter='DH5RAE')) as a left join (select * from SPOTS where datetime=6368158980 and (reporter='DJ0ABR' or reporter='DH5RAE')) as b on a.datetime=b.datetime and a.callsign=b.callsign and a.reporter<>b.reporter where a.reporter='DJ0ABR';
++------------+--------+--------+----------+
+| datetime   | C1     | c2     | callsign |
++------------+--------+--------+----------+
+| 6368158980 | DJ0ABR | DH5RAE | 9A3SWO   |
+| 6368158980 | DJ0ABR | NULL   | DD0PD    |
+| 6368158980 | DJ0ABR | DH5RAE | DK0EP    |
+| 6368158980 | DJ0ABR | DH5RAE | DK9MS    |
+| 6368158980 | DJ0ABR | DH5RAE | DL5LCR   |
+| 6368158980 | DJ0ABR | DH5RAE | F4HQJ    |
+| 6368158980 | DJ0ABR | DH5RAE | G4ZAL    |
+| 6368158980 | DJ0ABR | DH5RAE | G8AXA    |
+| 6368158980 | DJ0ABR | DH5RAE | HB9DOZ   |
+| 6368158980 | DJ0ABR | DH5RAE | PA0O/P   |
+| 6368158980 | DJ0ABR | DH5RAE | PA0PZ    |
++------------+--------+--------+----------+
+
+3. Schritt
+die gemeinsamen und die nur von DH5RAE gehörten, auf Basis der oben vorgefilterten Tabelle:
+
+select a.datetime, b.reporter as C1,a.reporter as c2, a.callsign from (select * from SPOTS where datetime=6368158980 and (reporter='DJ0ABR' or reporter='DH5RAE')) as a left join (select * from SPOTS where datetime=6368158980 and (reporter='DJ0ABR' or reporter='DH5RAE')) as b on a.datetime=b.datetime and a.callsign=b.callsign and a.reporter<>b.reporter where a.reporter='DH5RAE';
++------------+--------+--------+----------+
+| datetime   | C1     | c2     | callsign |
++------------+--------+--------+----------+
+| 6368158980 | DJ0ABR | DH5RAE | 9A3SWO   |
+| 6368158980 | NULL   | DH5RAE | DJ1DW    |
+| 6368158980 | DJ0ABR | DH5RAE | DK0EP    |
+| 6368158980 | DJ0ABR | DH5RAE | DK9MS    |
+| 6368158980 | DJ0ABR | DH5RAE | DL5LCR   |
+| 6368158980 | DJ0ABR | DH5RAE | F4HQJ    |
+| 6368158980 | DJ0ABR | DH5RAE | G4ZAL    |
+| 6368158980 | DJ0ABR | DH5RAE | G8AXA    |
+| 6368158980 | DJ0ABR | DH5RAE | HB9DOZ   |
+| 6368158980 | NULL   | DH5RAE | M6NQJ    |
+| 6368158980 | DJ0ABR | DH5RAE | PA0O/P   |
+| 6368158980 | DJ0ABR | DH5RAE | PA0PZ    |
+| 6368158980 | NULL   | DH5RAE | SM4OJ    |
++------------+--------+--------+----------+
+
+4. Schritt
+aus Schritt 3 die gemeinsamen löschen
+
+select a.datetime, if(b.reporter is NULL,' ',b.reporter) as C1,a.reporter as c2, a.callsign from (select * from SPOTS where datetime=6368158980 and (reporter='DJ0ABR' or reporter='DH5RAE')) as a left join (select * from SPOTS where datetime=6368158980 and (reporter='DJ0ABR' or reporter='DH5RAE')) as b on a.datetime=b.datetime and a.callsign=b.callsign and a.reporter<>b.reporter where a.reporter='DH5RAE' and b.reporter is NULL;
++------------+------+--------+----------+
+| datetime   | C1   | c2     | callsign |
++------------+------+--------+----------+
+| 6368158980 | NULL | DH5RAE | DJ1DW    |
+| 6368158980 | NULL | DH5RAE | M6NQJ    |
+| 6368158980 | NULL | DH5RAE | SM4OJ    |
++------------+------+--------+----------+
+
+5. Schritt
+die Ergebnisse aus Schritt 2 und 4 zusammenhängen
+
+select a.datetime, a.reporter as C1,b.reporter as C2, a.callsign as HEARD from (select * from SPOTS where datetime=6368158980 and (reporter='DJ0ABR' or reporter='DH5RAE')) as a left join (select * from SPOTS where datetime=6368158980 and (reporter='DJ0ABR' or reporter='DH5RAE')) as b on a.datetime=b.datetime and a.callsign=b.callsign and a.reporter<>b.reporter where a.reporter='DJ0ABR' 
+union all 
+select a.datetime, if(b.reporter is NULL,' ',b.reporter) as C1,a.reporter as c2, a.callsign from (select * from SPOTS where datetime=6368158980 and (reporter='DJ0ABR' or reporter='DH5RAE')) as a left join (select * from SPOTS where datetime=6368158980 and (reporter='DJ0ABR' or reporter='DH5RAE')) as b on a.datetime=b.datetime and a.callsign=b.callsign and a.reporter<>b.reporter where a.reporter='DH5RAE' and b.reporter is NULL order by HEARD;
++------------+--------+--------+--------+
+| datetime   | C1     | C2     | HEARD  |
++------------+--------+--------+--------+
+| 6368158980 | DJ0ABR | DH5RAE | 9A3SWO |
+| 6368158980 | DJ0ABR | NULL   | DD0PD  |
+| 6368158980 | NULL   | DH5RAE | DJ1DW  |
+| 6368158980 | DJ0ABR | DH5RAE | DK0EP  |
+| 6368158980 | DJ0ABR | DH5RAE | DK9MS  |
+| 6368158980 | DJ0ABR | DH5RAE | DL5LCR |
+| 6368158980 | DJ0ABR | DH5RAE | F4HQJ  |
+| 6368158980 | DJ0ABR | DH5RAE | G4ZAL  |
+| 6368158980 | DJ0ABR | DH5RAE | G8AXA  |
+| 6368158980 | DJ0ABR | DH5RAE | HB9DOZ |
+| 6368158980 | NULL   | DH5RAE | M6NQJ  |
+| 6368158980 | DJ0ABR | DH5RAE | PA0O/P |
+| 6368158980 | DJ0ABR | DH5RAE | PA0PZ  |
+| 6368158980 | NULL   | DH5RAE | SM4OJ  |
++------------+--------+--------+--------+
+
+6. Schritt
+NULL mit Leerezeichen ersetzen
+
+ select a.datetime, a.reporter as C1, if(b.reporter is NULL,' ',b.reporter) as C2, a.callsign as HEARD from (select * from SPOTS where datetime=6368158980 and (reporter='DJ0ABR' or reporter='DH5RAE')) as a left join (select * from SPOTS where datetime=6368158980 and (reporter='DJ0ABR' or reporter='DH5RAE')) as b on a.datetime=b.datetime and a.callsign=b.callsign and a.reporter<>b.reporter where a.reporter='DJ0ABR' 
+ union all 
+ select a.datetime, if(b.reporter is NULL,' ',b.reporter) as C1,a.reporter as c2, a.callsign from (select * from SPOTS where datetime=6368158980 and (reporter='DJ0ABR' or reporter='DH5RAE')) as a left join (select * from SPOTS where datetime=6368158980 and (reporter='DJ0ABR' or reporter='DH5RAE')) as b on a.datetime=b.datetime and a.callsign=b.callsign and a.reporter<>b.reporter where a.reporter='DH5RAE' and b.reporter is NULL order by HEARD;
++------------+--------+--------+--------+
+| datetime   | C1     | C2     | HEARD  |
++------------+--------+--------+--------+
+| 6368158980 | DJ0ABR | DH5RAE | 9A3SWO |
+| 6368158980 | DJ0ABR |        | DD0PD  |
+| 6368158980 |        | DH5RAE | DJ1DW  |
+| 6368158980 | DJ0ABR | DH5RAE | DK0EP  |
+| 6368158980 | DJ0ABR | DH5RAE | DK9MS  |
+| 6368158980 | DJ0ABR | DH5RAE | DL5LCR |
+| 6368158980 | DJ0ABR | DH5RAE | F4HQJ  |
+| 6368158980 | DJ0ABR | DH5RAE | G4ZAL  |
+| 6368158980 | DJ0ABR | DH5RAE | G8AXA  |
+| 6368158980 | DJ0ABR | DH5RAE | HB9DOZ |
+| 6368158980 |        | DH5RAE | M6NQJ  |
+| 6368158980 | DJ0ABR | DH5RAE | PA0O/P |
+| 6368158980 | DJ0ABR | DH5RAE | PA0PZ  |
+| 6368158980 |        | DH5RAE | SM4OJ  |
++------------+--------+--------+--------+
+
+
+ 7. Schritt:
+ mit Variablen vereinfachen
+ 
+ SET @startdate=6368158980; select a.datetime, a.reporter as C1, if(b.reporter is NULL,' ',b.reporter) as C2, a.callsign as HEARD from (select * from SPOTS where datetime=@startdate and (reporter='DJ0ABR' or reporter='DH5RAE')) as a left join (select * from SPOTS where datetime=@startdate and (reporter='DJ0ABR' or reporter='DH5RAE')) as b on a.datetime=b.datetime and a.callsign=b.callsign and a.reporter<>b.reporter where a.reporter='DJ0ABR' union all select a.datetime, if(b.reporter is NULL,' ',b.reporter) as C1,a.reporter as c2, a.callsign from (select * from SPOTS where datetime=@startdate and (reporter='DJ0ABR' or reporter='DH5RAE')) as a left join (select * from SPOTS where datetime=@startdate and (reporter='DJ0ABR' or reporter='DH5RAE')) as b on a.datetime=b.datetime and a.callsign=b.callsign and a.reporter<>b.reporter where a.reporter='DH5RAE' and b.reporter is NULL order by HEARD;
+ 
+  8. Schritt:
+ Endedatum hinzufügen
+ 
+ SET @startdate=6368158980; SET @enddate=6368158980; select a.datetime, a.reporter as C1, if(b.reporter is NULL,' ',b.reporter) as C2, a.callsign as HEARD from (select * from SPOTS where datetime>=@startdate and datetime<=@enddate and (reporter='DJ0ABR' or reporter='DH5RAE')) as a left join (select * from SPOTS where datetime>=@startdate and datetime<=@enddate and (reporter='DJ0ABR' or reporter='DH5RAE')) as b on a.datetime=b.datetime and a.callsign=b.callsign and a.reporter<>b.reporter where a.reporter='DJ0ABR' union all select a.datetime, if(b.reporter is NULL,' ',b.reporter) as C1,a.reporter as c2, a.callsign from (select * from SPOTS where datetime>=@startdate and datetime<=@enddate and (reporter='DJ0ABR' or reporter='DH5RAE')) as a left join (select * from SPOTS where datetime>=@startdate and datetime<=@enddate and (reporter='DJ0ABR' or reporter='DH5RAE')) as b on a.datetime=b.datetime and a.callsign=b.callsign and a.reporter<>b.reporter where a.reporter='DH5RAE' and b.reporter is NULL order by HEARD;
+ 
+ 9. Schritt:
+ Calls hinzufügen und richtig sortieren
+ 
+SET @startdate=6368158980; SET @enddate=6368158980; SET @CALL1='DJ0ABR'; SET @CALL2='DH5RAE'; select a.datetime as DATE, a.reporter as C1, if(b.reporter is NULL,' ',b.reporter) as C2, a.callsign as HEARD from (select * from SPOTS where datetime>=@startdate and datetime<=@enddate and (reporter=@CALL1 or reporter=@CALL2)) as a left join (select * from SPOTS where datetime>=@startdate and datetime<=@enddate and (reporter=@CALL1 or reporter=@CALL2)) as b on a.datetime=b.datetime and a.callsign=b.callsign and a.reporter<>b.reporter where a.reporter=@CALL1 union all select a.datetime, if(b.reporter is NULL,' ',b.reporter) as C1,a.reporter as c2, a.callsign from (select * from SPOTS where datetime>=@startdate and datetime<=@enddate and (reporter=@CALL1 or reporter=@CALL2)) as a left join (select * from SPOTS where datetime>=@startdate and datetime<=@enddate and (reporter=@CALL1 or reporter=@CALL2)) as b on a.datetime=b.datetime and a.callsign=b.callsign and a.reporter<>b.reporter where a.reporter=@CALL2 and b.reporter is NULL order by DATE,HEARD;
+ 
+10. Schritt:
+die Uhrzeit in ein lesbares Format umwandlen
+SET @startdate=6368158980; SET @enddate=6368158980; SET @CALL1='DJ0ABR'; SET @CALL2='DH5RAE'; select FROM_UNIXTIME(a.datetime*10-62135596800,'%Y.%m.%d %H:%i') as DATE, a.reporter as C1, if(b.reporter is NULL,' ',b.reporter) as C2, a.callsign as HEARD from (select * from SPOTS where datetime>=@startdate and datetime<=@enddate and (reporter=@CALL1 or reporter=@CALL2)) as a left join (select * from SPOTS where datetime>=@startdate and datetime<=@enddate and (reporter=@CALL1 or reporter=@CALL2)) as b on a.datetime=b.datetime and a.callsign=b.callsign and a.reporter<>b.reporter where a.reporter=@CALL1 union all select FROM_UNIXTIME(a.datetime*10-62135596800,'%Y.%m.%d %H:%i') , if(b.reporter is NULL,' ',b.reporter) as C1,a.reporter as c2, a.callsign from (select * from SPOTS where datetime>=@startdate and datetime<=@enddate and (reporter=@CALL1 or reporter=@CALL2)) as a left join (select * from SPOTS where datetime>=@startdate and datetime<=@enddate and (reporter=@CALL1 or reporter=@CALL2)) as b on a.datetime=b.datetime and a.callsign=b.callsign and a.reporter<>b.reporter where a.reporter=@CALL2 and b.reporter is NULL order by DATE,HEARD;
+
+11. Schritt:
+SNRs hinzufügen
+ 
+ SET @startdate=6368158980; SET @enddate=6368158980; SET @CALL1='DJ0ABR'; SET @CALL2='DH5RAE'; 
+ select a.snr as SNR1,b.snr as SNR2,FROM_UNIXTIME(a.datetime*10-62135596800,'%Y.%m.%d %H:%i') as DATE, a.reporter as C1, if(b.reporter is NULL,' ',b.reporter) as C2, a.callsign as HEARD from (select * from SPOTS where datetime>=@startdate and datetime<=@enddate and (reporter=@CALL1 or reporter=@CALL2)) as a left join (select * from SPOTS where datetime>=@startdate and datetime<=@enddate and (reporter=@CALL1 or reporter=@CALL2)) as b on a.datetime=b.datetime and a.callsign=b.callsign and a.reporter<>b.reporter where a.reporter=@CALL1 union all select b.snr as SNR1,a.snr as SNR2,FROM_UNIXTIME(a.datetime*10-62135596800,'%Y.%m.%d %H:%i') , if(b.reporter is NULL,' ',b.reporter) as C1,a.reporter as c2, a.callsign from (select * from SPOTS where datetime>=@startdate and datetime<=@enddate and (reporter=@CALL1 or reporter=@CALL2)) as a left join (select * from SPOTS where datetime>=@startdate and datetime<=@enddate and (reporter=@CALL1 or reporter=@CALL2)) as b on a.datetime=b.datetime and a.callsign=b.callsign and a.reporter<>b.reporter where a.reporter=@CALL2 and b.reporter is NULL order by DATE,HEARD;
+ 
+ 12. Schritt:
+Band hinzufügen
+ 
+ SET @startdate=6368158980; SET @enddate=6368158980; SET @CALL1='DJ0ABR'; SET @CALL2='DH5RAE'; SET @selband=6;
+ select a.snr as SNR1,b.snr as SNR2,FROM_UNIXTIME(a.datetime*10-62135596800,'%Y.%m.%d %H:%i') as DATE, a.reporter as C1, if(b.reporter is NULL,' ',b.reporter) as C2, a.callsign as HEARD from (select * from SPOTS where datetime>=@startdate and datetime<=@enddate and (reporter=@CALL1 or reporter=@CALL2) and band=@selband) as a left join (select * from SPOTS where datetime>=@startdate and datetime<=@enddate and (reporter=@CALL1 or reporter=@CALL2)) as b on a.datetime=b.datetime and a.callsign=b.callsign and a.reporter<>b.reporter where a.reporter=@CALL1 union all select b.snr as SNR1,a.snr as SNR2,FROM_UNIXTIME(a.datetime*10-62135596800,'%Y.%m.%d %H:%i') , if(b.reporter is NULL,' ',b.reporter) as C1,a.reporter as c2, a.callsign from (select * from SPOTS where datetime>=@startdate and datetime<=@enddate and (reporter=@CALL1 or reporter=@CALL2) and band=@selband) as a left join (select * from SPOTS where datetime>=@startdate and datetime<=@enddate and (reporter=@CALL1 or reporter=@CALL2)) as b on a.datetime=b.datetime and a.callsign=b.callsign and a.reporter<>b.reporter where a.reporter=@CALL2 and b.reporter is NULL order by DATE,HEARD;
+ 
+ 
+ 13. Schritt
+ qrg und dist hinzufügen
+ 
+ SET @startdate=6368166576; SET @enddate=6368167368; SET @CALL1='DJ0ABR'; SET @CALL2='DH5RAE'; SET @selband=6;
+ select a.qrg as QRG1,b.qrg as QRG2,a.distance as DIST1,b.distance as DIST2,a.snr as SNR1,b.snr as SNR2,FROM_UNIXTIME(a.datetime*10-62135596800,'%Y.%m.%d %H:%i') as DATE, a.reporter as C1, if(b.reporter is NULL,' ',b.reporter) as C2, a.callsign as HEARD from (select * from SPOTS where datetime>=@startdate and datetime<=@enddate and (reporter=@CALL1 or reporter=@CALL2) and band=@selband) as a left join (select * from SPOTS where datetime>=@startdate and datetime<=@enddate and (reporter=@CALL1 or reporter=@CALL2)) as b on a.datetime=b.datetime and a.callsign=b.callsign and a.reporter<>b.reporter where a.reporter=@CALL1 union all select b.qrg as QRG1,a.qrg as QRG2,b.distance as DIST1,a.distance as DIST2,b.snr as SNR1,a.snr as SNR2,FROM_UNIXTIME(a.datetime*10-62135596800,'%Y.%m.%d %H:%i') , if(b.reporter is NULL,' ',b.reporter) as C1,a.reporter as c2, a.callsign from (select * from SPOTS where datetime>=@startdate and datetime<=@enddate and (reporter=@CALL1 or reporter=@CALL2) and band=@selband) as a left join (select * from SPOTS where datetime>=@startdate and datetime<=@enddate and (reporter=@CALL1 or reporter=@CALL2)) as b on *a.datetime=b.datetime and a.callsign=b.callsign and a.reporter<>b.reporter where a.reporter=@CALL2 and b.reporter is NULL order by DATE,HEARD;
+ 
+ ===========================
+ 
+ Statistik:
+ -------------
+ 
+ * frühestes Datum:
+ select MIN(datetime) from SPOTS;
+ oder
+ select FROM_UNIXTIME(MIN(datetime)*10-62135596800,'%Y.%m.%d %H:%i') as DATE from SPOTS;
+  
+ * letztes Datum:
+ select MAX(datetime) from SPOTS;
+ oder
+ select FROM_UNIXTIME(MAX(datetime)*10-62135596800,'%Y.%m.%d %H:%i') as DATE from SPOTS;
+ 
+ * Gesamtanzahl bekommene Spots für ein Call:
+ select COUNT(*) from SPOTS where callsign=@CALL1;
+ 
+ * Gesamtanzahl gegebene Spots für ein Call:
+ select COUNT(*) from SPOTS where reporter=@CALL1;
+ 
+ * Gesamtanzahl von Stationen wo ein Call empfangen wurde
+ select COUNT(DISTINCT reporter) from SPOTS where callsign=@CALL1;
+  
+ * Gesamtanzahl empfangene Stationen für ein Call:
+ select COUNT(DISTINCT callsign) from SPOTS where reporter=@CALL1;
+ 
+ * maximale TX Distanz
+ select MAX(distance) from SPOTS where callsign=@CALL1;
+ 
+ * maximale RX Distanz
+ select MAX(distance) from SPOTS where reporter=@CALL1;
+ 
+ *Durchschnittliches bekommenes SNR1
+ select AVG(snr) from SPOTS where callsign=@CALL1;
+ 
+ *Durchschnittliches gegebenes SNR1
+ select AVG(snr) from SPOTS where reporter=@CALL1;
+ 
+ 
+und alles zusammen in einer riesen Abfrage:
+------------------------------------------
+
+Vorbereitung von 2 temporären Tabellen:
+
+SET @startdate=6368166576; SET @enddate=6368167368; SET @CALL1='DJ0ABR'; SET @CALL2='DH5RAE'; SET @selband=6;
+
+# drop temp tables
+drop table if exists temptab; 
+drop table if exists datetab; 
+
+# creat full time table
+create temporary table datetab select datetime,callsign,reporter from SPOTS where band=@selband and (callsign=@CALL1 or reporter=@CALL1); 
+
+# create temp spot table
+create temporary table temptab select * from SPOTS where datetime>=@startdate and datetime<=@enddate and band=@selband and (callsign=@CALL1 or reporter=@CALL1 or callsign=@CALL2 or reporter=@CALL2); 
+
+# show first/last date
+select "Start Date" as DESCR, FROM_UNIXTIME(SUM(C1)*10-62135596800,'%Y.%m.%d %H:%i') as CALL1, FROM_UNIXTIME(SUM(C2)*10-62135596800,'%Y.%m.%d %H:%i') as CALL2 from (select MIN(datetime) as C1, NULL as C2 from datetab where (callsign=@CALL1 or reporter=@CALL1) union all select NULL as C1, MIN(datetime) as C2 from datetab where (callsign=@CALL1 or reporter=@CALL1)) as taba union all select "End Date" as DESCR, FROM_UNIXTIME(SUM(C1)*10-62135596800,'%Y.%m.%d %H:%i') as CALL1, FROM_UNIXTIME(SUM(C2)*10-62135596800,'%Y.%m.%d %H:%i') as CALL2 from (select MAX(datetime) as C1, NULL as C2 from datetab where (callsign=@CALL1 or reporter=@CALL1) union all select NULL as C1, MAX(datetime) as C2 from datetab where (callsign=@CALL1 or reporter=@CALL1)) as taba
+union all
+
+# all given RX spots
+select "all RX spots" as DESCR, SUM(CNT1) as CALL1, SUM(CNT2) as CALL2 from (select COUNT(*) as CNT1, NULL as CNT2 from temptab where reporter=@CALL1 union all select NULL as CNT1, COUNT(*) as CNT2 from temptab where reporter=@CALL2) as taba
+union all
+
+# all spots on TX
+select "all TX spots" as DESCR, SUM(CNT1) as CALL1, SUM(CNT2) as CALL2 from (select COUNT(*) as CNT1, NULL as CNT2 from temptab where callsign=@CALL1 union all select NULL as CNT1, COUNT(*) as CNT2 from temptab where callsign=@CALL2) as taba
+union all
+
+# all RX stations
+select "all RX stations" as DESCR, SUM(CNT1) as CALL1, SUM(CNT2) as CALL2 from (select COUNT(DISTINCT callsign) as CNT1, NULL as CNT2 from temptab where reporter=@CALL1 union all select NULL as CNT1, COUNT(DISTINCT callsign) as CNT2 from temptab where reporter=@CALL2) as taba
+union all
+
+# all TX stations
+select "all TX stations" as DESCR, SUM(CNT1) as CALL1, SUM(CNT2) as CALL2 from (select COUNT(DISTINCT reporter) as CNT1, NULL as CNT2 from temptab where callsign=@CALL1 union all select NULL as CNT1, COUNT(DISTINCT reporter) as CNT2 from temptab where callsign=@CALL2) as taba
+union all
+
+# max RX distance
+select "max RX distance" as DESCR, SUM(CNT1) as CALL1, SUM(CNT2) as CALL2 from (select MAX(distance) as CNT1, NULL as CNT2 from temptab where reporter=@CALL1 union all select NULL as CNT1, MAX(distance) as CNT2 from temptab where reporter=@CALL2) as taba
+union all
+
+# max TX distance
+select "max TX distance" as DESCR, SUM(CNT1) as CALL1, SUM(CNT2) as CALL2 from (select MAX(distance) as CNT1, NULL as CNT2 from temptab where callsign=@CALL1 union all select NULL as CNT1, MAX(distance) as CNT2 from temptab where callsign=@CALL2) as taba
+union all
+
+# mid RX snr
+select "mid RX SNR" as DESCR, concat(round(SUM(CNT1),1)," dBm") as CALL1, concat(round(SUM(CNT2),1)," dBm") as CALL2 from (select AVG(snr) as CNT1, NULL as CNT2 from temptab where reporter=@CALL1 union all select NULL as CNT1, AVG(snr) as CNT2 from temptab where reporter=@CALL2) as taba
+union all
+
+# mid TX snr
+select "mid TX SNR" as DESCR, concat(round(SUM(CNT1),1)," dBm") as CALL1, concat(round(SUM(CNT2),1)," dBm") as CALL2 from (select AVG(snr) as CNT1, NULL as CNT2 from temptab where callsign=@CALL1 union all select NULL as CNT1, AVG(snr) as CNT2 from temptab where callsign=@CALL2) as taba;
+
+ZWEIWEG
+==========
+SET @startdate=6363166576; SET @enddate=6368277368; SET @CALL1='DJ0ABR'; SET @CALL2='DH5RAE'; SET @selband=6;
+
+drop table if exists mytab;
+drop table if exists urtab; 
+
+# Tabelle mit den wo nur ich empfangen habe
+create temporary table mytab select datetime as D,callsign as C, qrg as Q, snr as S, qthloc as QTH from SPOTS where datetime>=@startdate and datetime<=@enddate and band=@selband and reporter=@CALL1 group by callsign;
+
+# Tabelle mit den wo mich empfangen haben
+create temporary table urtab select datetime as D,reporter as C, qrg as Q, snr as S, rptr_qthloc as QTH from SPOTS where datetime>=@startdate and datetime<=@enddate and band=@selband and callsign=@CALL1 group by reporter;
+
+#finde gleiche
+select FROM_UNIXTIME(a.D*10-62135596800,'%Y.%m.%d %H:%i') as MYRXDATE, a.C,a.Q,a.S,a.QTH,FROM_UNIXTIME(b.D*10-62135596800,'%Y.%m.%d %H:%i') as MYTXDATE, b.C, b.Q,b.S,b.QTH from mytab as a join urtab as b on a.C=b.C group by a.C;
+
+#Anzahl der 2way Spots
+
+select count(0) as ANZ from (select count(*) from mytab as a join urtab as b on a.C=b.C group by a.C) as xx;
+
+und die fertige Abfrage:
+
+drop table if exists mytab1;
+drop table if exists urtab1; 
+create temporary table mytab1 select datetime as D,callsign as C, qrg as Q, snr as S, qthloc as QTH from SPOTS where datetime>=@startdate and datetime<=@enddate and band=@selband and reporter=@CALL1 group by callsign;
+create temporary table urtab1 select datetime as D,reporter as C, qrg as Q, snr as S, rptr_qthloc as QTH from SPOTS where datetime>=@startdate and datetime<=@enddate and band=@selband and callsign=@CALL1 group by reporter;
+drop table if exists mytab2;
+drop table if exists urtab2; 
+create temporary table mytab2 select datetime as D,callsign as C, qrg as Q, snr as S, qthloc as QTH from SPOTS where datetime>=@startdate and datetime<=@enddate and band=@selband and reporter=@CALL2 group by callsign;
+create temporary table urtab2 select datetime as D,reporter as C, qrg as Q, snr as S, rptr_qthloc as QTH from SPOTS where datetime>=@startdate and datetime<=@enddate and band=@selband and callsign=@CALL2 group by reporter;
+
+select "2-way contacts" as DESCR, sum(x) as CALL1, sum(y) as CALL2 from(select count(0) as x, NULL as y from (select count(*) from mytab1 as a join urtab1 as b on a.C=b.C group by a.C) as xx union all select NULL as x, count(0) as y from (select count(*) from mytab2 as a join urtab2 as b on a.C=b.C group by a.C) as xx) as xx;
+
+=== 2way Tabellen verbinden ===
+
+select FROM_UNIXTIME(a.D*10-62135596800,'%Y.%m.%d %H:%i') as MYRXDATE, a.C,a.R,a.Q,a.S,a.QTH,FROM_UNIXTIME(b.D*10-62135596800,'%Y.%m.%d %H:%i') as MYTXDATE, b.C, b.R,b.Q,b.S,b.QTH from t_mytab1 as a join t_urtab1 as b on a.C=b.C group by a.C;
+
+ergibt:
++------------------+--------+--------+---------+------+--------+------------------+--------+--------+---------+------+--------+
+| MYRXDATE         | C      | R      | Q       | S    | QTH    | MYTXDATE         | C      | R      | Q       | S    | QTH    |
++------------------+--------+--------+---------+------+--------+------------------+--------+--------+---------+------+--------+
+| 2019.01.02 09:22 | 2E0DSS | DJ0ABR | 7040043 |    2 | IO82xl | 2019.01.02 14:12 | 2E0DSS | DJ0ABR | 7040033 |  -15 | IO82xl |
++------------------+--------+--------+---------+------+--------+------------------+--------+--------+---------+------+--------+
+
+
+select FROM_UNIXTIME(a.D*10-62135596800,'%Y.%m.%d %H:%i') as MYRXDATE, a.C,a.R,a.Q,a.S,a.QTH,FROM_UNIXTIME(b.D*10-62135596800,'%Y.%m.%d %H:%i') as MYTXDATE, b.C, b.R,b.Q,b.S,b.QTH from t_mytab2 as a join t_urtab2 as b on a.C=b.C group by a.C;
+
+ergibt:
++------------------+--------+--------+---------+------+--------+------------------+--------+--------+---------+------+--------+
+| MYRXDATE         | C      | R      | Q       | S    | QTH    | MYTXDATE         | C      | R      | Q       | S    | QTH    |
++------------------+--------+--------+---------+------+--------+------------------+--------+--------+---------+------+--------+
+| 2019.01.02 09:22 | 2E0DSS | DH5RAE | 7040046 |   -2 | IO82xl | 2019.01.02 13:54 | 2E0DSS | DH5RAE | 7040106 |  -17 | IO82xl |
++------------------+--------+--------+---------+------+--------+------------------+--------+--------+---------+------+--------+
+
+daraus zwei Temp-Tabellen erzeugen:
+
+drop table if exists t_my2way;
+create temporary table t_my2way select a.D as RXDATE, a.C,a.R,a.Q,a.S,a.QTH,b.D as TXDATE, b.C as CTX, b.R as RTX,b.Q as QTX,b.S as STX,b.QTH as QTHTX from t_mytab1 as a join t_urtab1 as b on a.C=b.C group by a.C;
+
+drop table if exists t_ur2way;
+create temporary table t_ur2way select a.D as RXDATE, a.C,a.R,a.Q,a.S,a.QTH,b.D as TXDATE, b.C as CTX, b.R as RTX,b.Q as QTX,b.S as STX,b.QTH as QTHTX from t_mytab2 as a join t_urtab2 as b on a.C=b.C group by a.C;
+
+und diese joinen:
+gemeinsame 2ways und alleinige DJ0ABR 2ways
+
+select a.C as CS, a.R as CALL1, NULL as CALL2, a.RXDATE as MYRXD, a.TXDATE as MYTXD, b.RXDATE as URRXD, b.TXDATE as URTXD from t_my2way as a left join t_ur2way as b on a.C=b.C;
+
+gemeinsame 2ways und alleinige DH5RAE 2ways
+
+select a.C as CS, NULL as CALL1, a.R as CALL2, a.RXDATE as MYRXD, a.TXDATE as MYTXD, b.RXDATE as URRXD, b.TXDATE as URTXD from t_ur2way as a left join t_my2way as b on a.C=b.C;
+
+davon die gemeinsamen rauslöschen:
+
+select a.C as CS, NULL as CALL1, a.R as CALL2, b.RXDATE as MYRXD, b.TXDATE as MYTXD, a.RXDATE as URRXD, a.TXDATE as URTXD from t_ur2way as a left join t_my2way as b on a.C=b.C where b.RXDATE is NULL;
+
+und beide verbinden:
+
+select * from (select a.C as CS, a.R as MYCALL, a.RXDATE as MYRXD, a.Q as MYRXQRG, a.S as MYSNR, a.QTH as MYQTH, a.TXDATE as MYTXD, a.QTX as MYTXQRG, a.STX as MYTXSNR, a.QTHTX as MYTXQTH, b.R as URCALL, b.RXDATE as URRXD, b.Q as URRXQRG, b.S as URSNR, b.QTH as URQTH, b.TXDATE as URTXD, b.QTX as URTXQRG, b.STX as URTXSNR, b.QTHTX as URTXQTH  from t_my2way as a left join t_ur2way as b on a.C=b.C union all select a.C as CS, NULL as MYCALL, b.RXDATE as MYRXD, b.Q as MYRXQRG, b.S as MYSNR, b.QTH as MYQTH, b.TXDATE as MYTXD, b.QTX as MYTXQRG, b.STX as MYTXSNR, b.QTHTX as MYTXQTH, a.R as URCALL, a.RXDATE as URRXD, a.Q as URRXQRG, a.S as URSNR, a.QTH as URQTH, a.TXDATE as URTXD, a.QTX as URTXQRG, a.STX as URTXSNR, a.QTHTX as URTXQTH  from t_ur2way as a left join t_my2way as b on a.C=b.C where b.RXDATE is NULL) as c order by CS;
+
+es fehlen noch die "halben qsos
+
+dazu packe obige Abfrage in eine temp Tabelle:
+
+create temporary table t_2way select a.C as CS, a.R as MYCALL, FROM_UNIXTIME(a.RXDATE*10-62135596800,'%Y.%m.%d %H:%i') as MYRXD, a.Q as MYRXQRG, a.S as MYSNR, a.QTH as MYQTH, FROM_UNIXTIME(a.TXDATE*10-62135596800,'%Y.%m.%d %H:%i') as MYTXD, a.QTX as MYTXQRG, a.STX as MYTXSNR, a.QTHTX as MYTXQTH, b.R as URCALL, FROM_UNIXTIME(b.RXDATE*10-62135596800,'%Y.%m.%d %H:%i') as URRXD, b.Q as URRXQRG, b.S as URSNR, b.QTH as URQTH, FROM_UNIXTIME(b.TXDATE*10-62135596800,'%Y.%m.%d %H:%i') as URTXD, b.QTX as URTXQRG, b.STX as URTXSNR, b.QTHTX as URTXQTH  from t_my2way as a left join t_ur2way as b on a.C=b.C union all select a.C as CS, NULL as MYCALL, FROM_UNIXTIME(b.RXDATE*10-62135596800,'%Y.%m.%d %H:%i') as MYRXD, b.Q as MYRXQRG, b.S as MYSNR, b.QTH as MYQTH, FROM_UNIXTIME(b.TXDATE*10-62135596800,'%Y.%m.%d %H:%i') as MYTXD, b.QTX as MYTXQRG, b.STX as MYTXSNR, b.QTHTX as MYTXQTH, a.R as URCALL, FROM_UNIXTIME(a.RXDATE*10-62135596800,'%Y.%m.%d %H:%i') as URRXD, a.Q as URRXQRG, a.S as URSNR, a.QTH as URQTH, FROM_UNIXTIME(a.TXDATE*10-62135596800,'%Y.%m.%d %H:%i') as URTXD, a.QTX as URTXQRG, a.STX as URTXSNR, a.QTHTX as URTXQTH  from t_ur2way as a left join t_my2way as b on a.C=b.C where b.RXDATE is NULL;
+
+==================================================================
+12 Stunden
+SET @startdate=6368405592;
+SET @enddate=6368409912;
+SET @CALL1='DJ0ABR';
+SET @CALL2='DH5RAE';
+SET @selband=6;
+
+
+1 Stunde
+SET @startdate=6368409552;
+SET @enddate=6368409912;
+SET @CALL1='DJ0ABR';
+SET @CALL2='DH5RAE';
+SET @selband=6;
+    
+
+2 Minuten
+SET @startdate=6368409900;
+SET @enddate=6368409912;
+SET @CALL1='DJ0ABR';
+SET @CALL2='DH5RAE';
+SET @selband=6;
+
+Vorbereitung:
+
+    drop table if exists t_C1C2all;
+    create temporary table t_C1C2all select * from SPOTS where datetime>=@startdate and datetime<=@enddate and (reporter=@CALL1 or reporter=@CALL2 or callsign=@CALL1 or callsign=@CALL2) and band=@selband order by datetime desc;
+    alter table t_C1C2all add index (datetime,callsign,reporter);
+    drop table if exists t_C1C2rep;
+    create temporary table t_C1C2rep select * from t_C1C2all where reporter=@CALL1 or reporter=@CALL2;
+    alter table t_C1C2rep add index (datetime,callsign,reporter);
+    drop table if exists t_C1C2cal;
+    create temporary table t_C1C2cal select * from t_C1C2all where callsign=@CALL1 or callsign=@CALL2;
+    alter table t_C1C2cal add index (datetime,callsign,reporter);
+    
+RX-Vergleich:
+
+select a.qrg as QRG1,b.qrg as QRG2,a.distance as DIST1,b.distance as DIST2,a.snr as SNR1,b.snr as SNR2,FROM_UNIXTIME(a.datetime*10-62135596800,'%Y.%m.%d %H:%i') as DATE, a.reporter as C1, if(b.reporter is NULL,' ',b.reporter) as C2, a.callsign as HEARD from t_C1C2rep as a left join t_C1C2rep as b on a.datetime=b.datetime and a.callsign=b.callsign and a.reporter<>b.reporter where a.reporter=@CALL1 union all select b.qrg as QRG1,a.qrg as QRG2,b.distance as DIST1,a.distance as DIST2,b.snr as SNR1,a.snr as SNR2,FROM_UNIXTIME(a.datetime*10-62135596800,'%Y.%m.%d %H:%i') , if(b.reporter is NULL,' ',b.reporter) as C1,a.reporter as c2, a.callsign from t_C1C2rep as a left join t_C1C2rep as b on a.datetime=b.datetime and a.callsign=b.callsign and a.reporter<>b.reporter where a.reporter=@CALL2 and b.reporter is NULL order by DATE,HEARD;
+
+TX-Vergleich:
+
+select a.qrg as QRG1,b.qrg as QRG2,a.distance as DIST1,b.distance as DIST2,a.snr as SNR1,b.snr as SNR2,FROM_UNIXTIME(a.datetime*10-62135596800,'%Y.%m.%d %H:%i') as DATE, a.callsign as C1, if(b.callsign is NULL,' ',b.callsign) as C2, a.reporter as HEARD from t_C1C2cal as a left join t_C1C2cal as b on a.datetime=b.datetime and a.reporter=b.reporter and a.callsign<>b.callsign where a.callsign=@CALL1 union all select b.qrg as QRG1,a.qrg as QRG2,b.distance as DIST1,a.distance as DIST2,b.snr as SNR1,a.snr as SNR2,FROM_UNIXTIME(a.datetime*10-62135596800,'%Y.%m.%d %H:%i') , if(b.callsign is NULL,' ',b.callsign) as C1,a.callsign as c2, a.reporter from t_C1C2cal as a left join t_C1C2cal as b on a.datetime=b.datetime and a.reporter=b.reporter and a.callsign<>b.callsign where a.callsign=@CALL2 and b.callsign is NULL order by DATE,HEARD ;

@@ -1,0 +1,107 @@
+// bitte nur den Text innerhalb der ' ' veraendern ! Alles andere lassen wie es ist
+var config = {
+    // Persoenliche Einstellungen
+    call: 'NOCALL',
+    qthloc: 'AA00AA',
+    
+    // HTML Title of the pages
+    webtitle: 'WebWSPR',
+    
+    // Wasserfalleinstellungen
+    // soviele Sekunden werden zu einer Zeile zusammengefasst
+    // mögliche Werte: 1,2 oder 4
+    secondsPerLine: 4,
+    // Frequenzbereich des Wasserfalls, 
+    // gebe hier die Frequenz des linken und rechnten Rands ein
+    FrequencyLeft: 1350,
+    FrequencyRight: 1650,
+    
+    // TX Modus
+    // moegliche Werte:
+    // 0=AUS, 1=ICOM, 2=DDS, 3=hamlib, 4=TRX mit serieller PTT
+    txmode: 0,
+    
+    // Band für die Spotanzeige in den Listen
+    listband: '40m',
+    
+    // Zeitspane für die Listen
+    listtime: '6h',
+    
+    // WSPR Sendeleistung in dBm
+    txpower: 37,
+    
+    // TX Frequenz Offset 
+    txoffset: 1500,
+    
+    // Kalibrationseinstellungen 
+    // Kalibrierung des Spektrums auf ein -80dBm Signal
+    // --- solange es noch keine Spektrumanzeige gibt muss diese Einstellung auf 0 beiben ---
+    // Fließkommazahl: das Komma muss als Punkt eingegeben werden
+    calib80dBm: 0,
+    
+    // Wasserfalleinstellungen
+    // Pegel: dieser Wert verändert die Helligkeit und wird auf das Grundrauschen ohne Signal eingestellt
+    // Wertebereich: beliebig, wird spaeter zum dBm Wert des Grundrauschens
+    // nur ganze Zahlen ohne Komma
+    levelWF: 0,
+    
+    // Verstärkung: dieser Wert legt fest wie hell stärkere Signale dargestellt werden
+    // Wertebereich: beliebig, nur ganze Zahlen ohne Komma
+    gainWF: 0,
+    
+    // Mittelwertbildung Y-Achse
+    // der vertikale Mittelwert der Farbpixel wird ueber die hier angegebene Zeit in Sekunden gebildet
+    // ueblicher Wert ca. 3, moeglicher Wertebereich: 1-20
+    midHF: 6,
+    
+    // Wasserfall-Automodus
+    // aus=0, ein=1
+    // wenn eingeschaltet passt es die Farbpixel in den Farbraum von 0-255 ein
+    autoWF: 1,
+    
+    // Call zum Vergleich im Spots-Fenster
+    call_ur1: '',
+    call_ur2: '',
+    call_ur3: '',
+    call_ur4: '',
+    call_ur5: '',
+    
+    // select one of the 5 calls for the list display (0...4)
+    call_ur_sel: 'c1',
+    
+    // ICOM CIV adress (hexadezimal with 'h' or decimal)
+    civ_adr: '94h',
+    
+    // U02-DDS settings
+    // output power in the range 0-100
+    dds_txpwr: 4,
+    // frequency calibration, + or -, 1 = 100ppm, 0=no calibration
+    dds_cal: 50,
+    // when the DDS is used as LO fpr an RX, enter the IF frequency here, in Hz.
+    dds_if: 10700,
+    
+    // HAMLIB
+    hamlib_trx: '',
+    
+    // WSPR frequencies
+    // band (without m or cm) : frequency in MHz
+    qrgs: {
+        2200: 0.1360,
+        630: 0.4742,
+        160: 1.8366,
+        80: 3.5926,
+        60: 5.3647,
+        40: 7.0386,
+        30: 10.1387,
+        20: 14.0956,
+        17: 18.1046,
+        15: 21.0946,
+        12: 24.9246,
+        10: 28.1246,
+        6: 50.2930,
+        4: 70.0910,
+        2: 144.4890,
+        70: 432.3000,
+        23: 1296.500
+    },
+}

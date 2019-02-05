@@ -1,0 +1,7 @@
+cd /home/tc/wspr2
+cp libgd.so.3.0.4 /usr/local/lib
+cd /usr/local/lib
+ln -s libgd.so.3.0.4 libgd.so.3
+ldconfig
+cd /home/tc/wspr2
+./wsprtk arg1; while true; do ./wsprtk arg2 arg3; sleep 1; done;

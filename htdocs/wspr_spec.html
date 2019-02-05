@@ -1,0 +1,74 @@
+<!doctype html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>U02-WebWSPR</title>
+<link rel="icon" href="/favicon.ico?" type="image/x-icon">
+<script type="text/javascript" src="jquery-3.3.1.js"></script>
+<script type="text/javascript" src="jquery.dataTables.min.js"></script>
+<link rel="stylesheet" type="text/css" href="jquery.dataTables.min.css">
+<script type="text/javascript" src="phpdir/wsprconfig.js"></script>
+<script type="text/javascript" src="wspr_js.js"></script>
+<link rel="stylesheet" type="text/css" href="wspr_style.css">
+<style>
+
+
+.wsprmain 
+{
+    width: 1200px;
+    display: flex;
+    background-color: #e0e0e0;
+}
+
+.panel1
+{
+    width: 1200px;
+    font-size: 12px;
+}
+
+</style>
+</head>
+
+<body>
+<script>
+window.onload = start;
+
+function start()
+{
+    CurrentDate();
+
+    setInterval(CurrentDate, 1000);
+    setInterval(reloadData, config.secondsPerLine * 1000);
+}
+
+// to trick this fool of browser cache, modify the image URL at every call
+var cachebuster = 0;
+
+function reloadData()
+{
+    // loading an image: anti flicker
+    var myimg = document.getElementById('wf');  // image to be shown
+    var newImg = new Image;                     // create a new image
+    newImg.onload = function() {                // when it is loaded, assign the new image to my image
+                        myimg.src = this.src;
+                    }
+    // load the new image
+    newImg.src = "wf1200.bmp?cb" + cachebuster.toString();
+    
+    cachebuster++;
+}
+
+</script>
+
+<div id="headline" class="header"></div>
+<script>
+    printHeader_simple();
+</script>
+<div class="wsprmain" id="wsprmain">
+    <div class="panel1" id="panel1">
+        <img id="wf" alt="Waterfall" src="wf1200.bmp">
+    </div>
+</div>
+<a id="footline"></a>
+<script>footer();</script>
+</body>
+</html>

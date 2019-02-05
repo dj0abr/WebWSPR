@@ -1,0 +1,297 @@
+<!doctype html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>U02-WebWSPR</title>
+<link rel="icon" href="/favicon.ico?" type="image/x-icon">
+<script type="text/javascript" src="phpdir/wsprconfig.js?ver<%=DateTime.Now.Ticks.ToString()%>"></script>
+<script type="text/javascript" src="wspr_js.js"></script>
+<script src="ol.js"></script>
+<!-- The line below is only needed for old environments like Internet Explorer and Android 4.x -->
+<script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL"></script>
+<link rel="stylesheet" type="text/css" href="wspr_style.css">
+<link rel="stylesheet" href="ol.css" type="text/css">
+
+<style>
+.map 
+{
+    height: 640px;
+    width: 1200px;
+}
+#mypopup
+{
+    width: 52px !important;
+    height: 12px !important;
+}
+
+.popdiv
+{
+    //width: 50px;
+    font-family: monospace;
+    font-size:8px;
+    font-weight: 500;
+    background-color:yellow;
+    color:blue;
+    border:1px solid black;
+    text-align:center;
+}
+
+</style>
+
+</head>
+
+<body>
+<script>
+/*
+how maps  are loaded':
+1) start a time to load map (250ms). Map loading is done by "loadQTHlocs"
+2) in "loadQTHlocs" test if the file phpdir/ready.sig exists
+3) if this file does not exits, do nothing, but try again all 250ms
+4) if this file exists, then the QTH files are up to date and the map can be displayed
+
+changing band or time by the user:
+1) the file phpdir/ready.sig is deleted (by php)
+2) restart the 250ms timer to check when ready.sig exists and the map can be displayed
+
+changing my/ur or rx/tx
+1) display the map immediately since all file always exist
+*/
+window.onload = start;
+
+var maploadID;
+function start()
+{
+    document.getElementById('mapdiv').innerHTML = "loading map ...";
+    setInterval(CurrentDate, 1000);
+    maploadID = setInterval(loadQTHlocs, 250); // run until the QTH files are updated
+}
+
+function Deg2Rad(degrees)
+{
+    return degrees * Math.PI / 180;
+}
+
+function Rad2Deg(radians)
+{
+    return radians * 180 / Math.PI;
+}
+
+//add the feature vector to the layer vector, and apply a style to whole layer
+var qtharr;
+
+var center_long = 0;
+var center_lat = 0;
+var zoom = 5;
+
+function calculateMap()
+{
+    // Calculate center of the map
+    var minlon = 10000;
+    var maxlon = -10000;
+    var minlat = 10000;
+    var maxlat = -10000;
+    
+    var xsize = 1200;
+    var ysize = 640;
+    
+    for (var i=0; i<qtharr.length; i++)
+    {
+        qthlocToLonLat(qtharr[i]);
+        
+        if (lat > maxlat) maxlat = lat;
+        if (lat < minlat) minlat = lat;
+
+        if (lon > maxlon) maxlon = lon;
+        if (lon < minlon) minlon = lon;
+    }
+    center_long = (maxlon - minlon) / 2 + minlon;
+    
+    // Berechne benötigten Zoom
+    var paddingFactor = 0.5; // Anpassungswert
+
+    var ry1 = Math.log((Math.sin(Deg2Rad(minlat)) + 1) / Math.cos(Deg2Rad(minlat)));
+    var ry2 = Math.log((Math.sin(Deg2Rad(maxlat)) + 1) / Math.cos(Deg2Rad(maxlat)));
+    var ryc = (ry1 + ry2) / 2;
+    var centerY = Rad2Deg(Math.atan(Math.sinh(ryc)));
+
+    center_lat = centerY;
+    
+    var resolutionHorizontal = (maxlon - minlon) / xsize;
+
+    var vy0 = Math.log(Math.tan(Math.PI * (0.25 + centerY / 360)));
+    var vy1 = Math.log(Math.tan(Math.PI * (0.25 + maxlat / 360)));
+    var viewHeightHalf = ysize / 2.0;
+    var zoomFactorPowered = viewHeightHalf / (40.7436654315252 * (vy1 - vy0));
+    var resolutionVertical = 360.0 / (zoomFactorPowered * 256);
+
+    var resolution = Math.max(resolutionHorizontal, resolutionVertical) * paddingFactor;
+
+    if (resolution == 0)
+        zoom = 5;
+    else
+    {
+        var dzoom = Math.log(360 / (resolution * 256), 2);
+        zoom = dzoom;
+    }
+    
+    zoom.toFixed(1);
+}
+
+var map = null;
+var vectorSource;
+
+function addMarker(callsign)
+{
+    var iconFeature = new ol.Feature
+    ({
+        geometry: new ol.geom.Point(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857')),
+    });
+
+    var micon = '/marker-icon.png';
+    if(callsign == config.call)
+        micon = '/marker-icon_my.png';
+
+    var iconStyle = new ol.style.Style
+    ({
+            image: new ol.style.Icon ({
+                    anchor: [0.5, 0.5],
+                    anchorXUnits: 'fraction',
+                    anchorYUnits: 'fraction',
+                    src: micon,
+                    crossOrigin: 'anonymous',
+            }),
+            text: new ol.style.Text({
+                text: callsign,
+                font: 'normal 10px FontAwesome',
+                textAlign: 'center',
+                textBaseline: 'top',
+                fill: new ol.style.Fill({
+                    color: 'blue',
+                }),
+                /*stroke: new ol.style.Stroke({
+                    color: 'black',
+                    width: 1
+                })*/
+            })
+    });
+    iconFeature.setStyle(iconStyle);
+    vectorSource.addFeature(iconFeature);
+}
+
+function initMap()
+{
+    calculateMap();
+    
+    vectorSource = new ol.source.Vector({});
+    
+    // add markers
+    for (var i = 0; i < qtharr.length; i+=2) 
+    {
+        var qthloc = qtharr[i];
+        var callsign = qtharr[i+1];
+        if(qthlocToLonLat(qthloc) == 0) continue;
+        
+        addMarker(callsign);
+    }
+    // and add own location
+    if(qthfile == "QTH_MY_RX.txt" || qthfile == "QTH_MY_TX.txt")
+    {
+        if(qthlocToLonLat(config.qthloc) != 0) 
+        {
+            addMarker(config.call);
+        }
+    }
+    else
+    {
+    /*
+        TODO: to display the friends location we would need his locator
+        if(qthlocToLonLat(???) != 0) 
+        {
+            addMarker(getSelUrcall());
+        }*/
+    }
+    
+
+    map = new ol.Map({
+        target: 'mapdiv',
+        layers: [
+                    new ol.layer.Tile({
+                    source: new ol.source.OSM()
+                    }),
+                    new ol.layer.Vector
+                    ({
+                        source: vectorSource,
+                        updateWhileAnimating: true,
+                        updateWhileInteracting: true,
+                    }),
+                ],
+        view:   new ol.View({
+                    center: ol.proj.fromLonLat([center_long, center_lat]),
+                    zoom: zoom
+                })
+    });
+}
+
+var xmlHttpObject = new XMLHttpRequest();
+
+var qthfile = "QTH_MY_RX.txt"; 
+
+// request a QTH json file with qthlocator and calls
+function loadQTHlocs()
+{
+    // first check if the QTH files are already updated
+    // this is the case if phpdir/ready.sig is there
+    var resp = loadFile("phpdir/ready.sig") ;
+    if(resp == "x")
+    {
+        document.getElementById('mapdiv').innerHTML = "";
+        clearInterval(maploadID);
+        xmlHttpObject.open('get',"/" + qthfile + "?cba=" + Math.random());
+        xmlHttpObject.onreadystatechange = handleContent;
+        xmlHttpObject.send(null);
+    }
+    return false;
+}
+
+function handleContent()
+{
+    if (xmlHttpObject.readyState == 4)
+    {
+       // Gesamte Datei in Zeilen aufgeteilt
+        var alltext = xmlHttpObject.responseText;
+        // remove []{}"q:...
+        alltext = alltext.replace(/[^0-9,^A-Z,^a-z]/g,"");
+        alltext = alltext.substring(4);
+        qtharr = alltext.split(',');
+        
+        document.getElementById('waitpic').src = "";
+        initMap();
+    }
+}
+
+function updateMap()
+{
+    vectorSource.clear();
+    document.getElementById('mapdiv').innerHTML = "<b>loading map ...</b>";
+    document.getElementById('waitpic').src = "/wait1.gif";
+
+    // try to load the map and markers until phpdir/ready.sig signals updated lists
+    maploadID = setInterval(loadQTHlocs, 250);
+}
+
+</script>
+
+<div id="headline" class="header"></div>
+<script>
+    printHeader_simple();
+</script>
+<div id="untertitel" class="untertitel" style="width:1200px"></div>
+<script>
+    printUntertitel_map();
+</script>
+<img id="waitpic">
+<div id="mapdiv" class="map"></div>
+<a id="footline"></a>
+<script>footer();</script>
+</body>
+</html>

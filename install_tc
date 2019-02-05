@@ -1,0 +1,4 @@
+# install WebWSPR without sources (i.e. for tinyCore)
+rsync -auv -e "ssh -l tc" ~/wspr2/wsprtk ~/wspr2/wsprd_arm ~/wspr2/startwspr_tiny ~/wspr2/libgd.so.3.0.4 192.168.0.103:/home/tc/wspr2
+rsync -auv -e "ssh -l tc" ~/wspr2/htdocs/* 192.168.0.103:/home/tc/wspr2/htdocs
+

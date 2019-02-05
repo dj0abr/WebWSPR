@@ -1,0 +1,2 @@
+grep -qF -- "cd /home/odroid/wspr2; ./startwspr" /etc/rc.local || sed -i '2s/^/cd \/home\/odroid\/wspr2; .\/startwspr/' /etc/rc.local
+

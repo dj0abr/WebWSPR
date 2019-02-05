@@ -1,0 +1,178 @@
+<!doctype html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>U02-WebWSPR</title>
+<link rel="icon" href="/favicon.ico?" type="image/x-icon">
+<script type="text/javascript" src="jquery-3.3.1.js"></script>
+<script type="text/javascript" src="jquery.dataTables.min.js"></script>
+<link rel="stylesheet" type="text/css" href="jquery.dataTables.min.css">
+<script type="text/javascript" src="phpdir/wsprconfig.js?ver<%=DateTime.Now.Ticks.ToString()%>" type="text/javascript"></script>
+<script type="text/javascript" src="wspr_js.js"></script>
+<link rel="stylesheet" type="text/css" href="wspr_style.css">
+<style>
+
+
+.wsprmain 
+{
+    width: 1200px;
+    display: flex;
+    background-color: #e0e0e0;
+}
+
+.panel1
+{
+    width: 600px;
+    font-size: 12px;
+}
+
+.panel2
+{
+    width: 600px;
+}
+
+/* make the table cells more compact */
+
+table.cell-border tbody th, table.cell-border tbody td {
+    padding: 3px;   /* row height */
+    padding-right: 15px;
+    white-space: nowrap;
+}
+</style>
+</head>
+
+<body>
+<script>
+window.onload = start;
+
+function start()
+{
+    CurrentDate();
+    loadTable();
+
+    setInterval(CurrentDate, 1000);
+    setInterval(reloadData, config.secondsPerLine * 1000);
+}
+
+// Draw Table and update via Ajax
+var CallsignTable;
+var lastdate;
+
+function loadTable() 
+{
+    CallsignTable = $('#actspots').DataTable( 
+        {
+            ajax:     "JSON.txt",
+            columns: [
+                        { data: 'DateTime' },
+                        { data: 'dBm' },
+                        { data: 'Dtime' },
+                        { data: 'QRG' },
+                        { data: 'Call' },
+                        { data: 'QTHloc' },
+                        { data: 'TXpwr' },
+                        { data: 'Drift' }
+                    ],
+            "order": [[ 0, "desc" ],[ 4, "asc" ]],
+            scrollY:        500,	// vertical size
+            scrollX:        200,
+            scrollCollapse: true,
+            scroller:       true,
+	    	pageLength:     50,		// number of displayed line by default
+            columnDefs:   [
+                                { "width": "1px", "targets": 0 },
+                                { "width": "1px", "className": "dt-right", "targets": 1 },
+                                { "width": "1px", "className": "dt-right", "targets": 2 },
+                                { "width": "1px", "className": "dt-right", "targets": 6 },
+                                { "width": "1px", "className": "dt-right", "targets": 7 },
+                                { targets : [3],
+                                    render : function(data, type, row) 
+                                    {
+                                        if(data > 0)
+                                        {
+                                            var mhz = Math.floor(data);
+                                            var khz = Math.floor((data * 1000) - mhz*1000);
+                                            var hz  = ((data * 1000000) - mhz*1000000 - khz*1000).toFixed(1);
+                                            var qrgnice = mhz + "." + ("00"+khz).slice(-3) + "." + ("00"+hz).slice(-5);
+                                            return qrgnice;
+                                        }
+                                        return data;
+                                    }     
+                                },
+                          ],
+            fnRowCallback: function (nRow, aData, iDisplayIndex, iDisplayIndexFull) 
+                            { 
+                                var white1 = '#ffffff';
+                                var white2 = '#f8f8f8';
+                                
+                                if(lastdate != aData['DateTime'])
+                                {
+                                    $('td', nRow).css('border-top', "1px solid #000000");
+                                }
+                                
+                                // alternate lines
+                                if(iDisplayIndex & 1)
+                                {
+                                    // darker lines
+                                    // make time/call darker
+                                    $("td:eq(0)", nRow).css('background', white2);
+                                    $("td:eq(1)", nRow).css('background', white2);
+                                    $("td:eq(2)", nRow).css('background', white2);
+                                    $("td:eq(3)", nRow).css('background', white2);
+                                    $("td:eq(4)", nRow).css('background', white2);
+                                    $("td:eq(5)", nRow).css('background', white2);
+                                    $("td:eq(6)", nRow).css('background', white2);
+                                    $("td:eq(7)", nRow).css('background', white2);
+                                }
+                                lastdate = aData['DateTime'];
+                            },
+        }
+    );
+    $.fn.dataTable.ext.errMode = 'none';    // supress ajax error message if table not exists
+}
+
+function reloadData()
+{
+    CallsignTable.ajax.reload(null,false);
+    
+    // loading an image: anti flicker
+    var myimg = document.getElementById('wf');  // image to be shown
+    var newImg = new Image;                     // create a new image
+    newImg.onload = function() {                // when it is loaded, assign the new image to my image
+        myimg.src = newImg.src;
+    }
+    // load the new image
+    newImg.src = "wf.bmp?cb=" + Math.random();
+}
+
+</script>
+
+<div id="headline" class="header"></div>
+<script>
+    printHeader_simple();
+    add_onoff();
+</script>
+<div class="wsprmain" id="wsprmain">
+    <div class="panel1" id="panel1">
+        <table id="actspots" class="cell-border" style="width:100%">
+            <thead>
+                <tr>
+                <th>Time</th>
+                <th>dB</th>
+                <th>DT</th>
+                <th>QRG</th>
+                <th>Call</th>
+                <th>QTH</th>
+                <th>Pwr</th>
+                <th>DF</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <div class="panel2" id="panel2">
+        <img id="wf" alt="Waterfall" src="wf.bmp">
+    </div>
+</div>
+<a id="footline"></a>
+<script>footer();</script>
+</body>
+</html>

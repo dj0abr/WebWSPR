@@ -1,0 +1,51 @@
+<!doctype html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WebWSPR</title>
+</head>
+<style>
+.protokoll { font-family:Courier; font-size:14px; color:Chartreuse; font-weight: bold;margin:0px 0px; text-align:left}
+</style>
+<body style="background-color:black">
+
+<script>
+window.onload = start;
+var xmlHttpObject = new XMLHttpRequest();
+var cbnum = 0;
+function loadContent()
+{
+    xmlHttpObject.open('get',"/serverlog?cb=" + cbnum++);
+    xmlHttpObject.onreadystatechange = handleContent;
+    xmlHttpObject.send(null);
+    return false;
+}
+
+function handleContent()
+{
+    if (xmlHttpObject.readyState == 4)
+    {
+        var Zeilenananzahl = 1000;
+        var lines = xmlHttpObject.responseText.split('\n');
+        var text = "";
+        var len = Zeilenananzahl;
+        if(lines.length <= Zeilenananzahl)
+            len = lines.length-1;
+        if(len < 1) return;
+        for(i=(lines.length-1); i>(lines.length-len); i--)
+        {
+            text = text + lines[i] + '<br>';
+        }
+        // replace SPC with &nbsp;
+        document.getElementById('myContent').innerHTML = text.replace(/ /g,'&nbsp;');
+    }
+}
+
+function start()
+{
+    setInterval(loadContent, 1000);
+}
+</script>
+
+<p class="protokoll" id="myContent"></p>
+</body>
+</html>

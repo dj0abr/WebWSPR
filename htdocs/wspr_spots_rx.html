@@ -1,0 +1,280 @@
+<!doctype html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>U02-WebWSPR</title>
+<link rel="icon" href="/favicon.ico?" type="image/x-icon">
+<script type="text/javascript" src="jquery-3.3.1.js"></script>
+<script type="text/javascript" src="jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="phpdir/wsprconfig.js?ver<%=DateTime.Now.Ticks.ToString()%>"></script>
+<script type="text/javascript" src="wspr_js.js"></script>
+<link rel="stylesheet" type="text/css" href="jquery.dataTables.min.css">
+<link rel="stylesheet" type="text/css" href="wspr_style.css">
+
+<style>
+
+/*  ========== two main panels, side by side ============= */
+.wsprmain 
+{
+    width: 1200px;
+    display: flex;
+    background-color: #e0e0e0;
+}
+
+.panel
+{
+    width: 1200px;
+    font-size: 12px;
+}
+
+/* make the table cells more compact */
+
+table.cell-border tbody th, table.cell-border tbody td {
+    padding: 3px;   /* row height */
+    padding-left: 25px;
+    padding-right: 25px;
+    white-space: nowrap;
+}
+
+</style>
+
+</head>
+
+<body>
+<script>
+window.onload = start;
+
+function start()
+{
+    loadTable();
+    
+    setInterval(CurrentDate, 1000);
+    setInterval(reloadData, 4000);
+    
+    document.getElementById("header_call").innerHTML = config.call + " " + config.qthloc;
+    
+    document.getElementById('gotorxspots').onclick = function() { window.location.href = "/wspr_spots.html" };
+}
+
+// Draw Table and update via Ajax
+var CallsignTable;
+
+function loadTable() 
+{
+    CallsignTable = $('#actspots').DataTable( 
+        {
+            ajax:    ({
+                        url: "SPOTS_JSON_RX.txt",
+                     }),
+            columns:        [
+                                { data: 'REPORTER1' },
+                                { data: 'D1' },
+                                { data: 'QRG1' },
+                                { data: 'SNR1' },
+                                { data: 'DIST1' },
+                                { data: 'D2' },
+                                { data: 'QRG2' },
+                                { data: 'SNR2' },
+                                { data: 'DIST2' },
+                            ],
+            columnDefs:     [
+                                { targets : [1,5],  // Date column
+                                    render : function(data, type, row) 
+                                    {
+                                        if(data.length < 5) return data;
+                                        // convert database date to UTC
+                                        // FROM_UNIXTIME(a.datetime*10-62135596800,'%Y.%m.%d %H:%i')
+                                        var dsec = data * 10 - 62135596800;
+                                        var d = new Date(dsec * 1000);
+                                        return d.getUTCFullYear() + "." + to2(d.getUTCMonth()+1) + "." + to2(d.getUTCDate())  + " " + to2(d.getUTCHours()) + ":" + to2(d.getUTCMinutes());
+                                    }     
+                                },
+                                { "className": "dt-right", "targets": 3 },
+                                { "className": "dt-right", "targets": 4 },
+                                { "className": "dt-right", "targets": 7 },
+                                { "className": "dt-right", "targets": 8 },
+                            ],
+            order:          [[ 0, "asc" ]],
+            bSort:          true,
+            scrollY:        650,	// vertical size
+            scrollX:        200,
+            scrollCollapse: true,
+            scroller:       true,
+	    	pageLength:     250,		// number of displayed line by default
+            bLengthChange:  false,
+            searching:      false,
+            fnRowCallback: function (nRow, aData, iDisplayIndex, iDisplayIndexFull) 
+                            { 
+                                var white1 = '#ffffff';
+                                var white2 = '#f8f8f8';
+                                var white3 = '#f0f0f0';
+                                var white4 = '#d0d0d0';
+                                var white5 = '#c0c0c0';
+                                
+                                var mygreen = '#e0ffe0';
+                                var mygreen2 = '#d8f8d8';
+                                var urgreen = '#d8f8d8';
+                                var urgreen2 = '#d0f0d0';
+                                
+                                
+                                // alternate lines
+                                if(iDisplayIndex & 1)
+                                {
+                                    // darker lines
+                                    // make time/call darker
+                                    $("td:eq(0)", nRow).css('background', white3);
+                                    
+                                    $("td:eq(1)", nRow).css('background', white2);
+                                    $("td:eq(2)", nRow).css('background', white2);
+                                    $("td:eq(3)", nRow).css('background', white2);
+                                    $("td:eq(4)", nRow).css('background', white2);
+                                    
+                                    // make ur-Cols a little darker
+                                    $("td:eq(4)", nRow).css('background', white3);
+                                    $("td:eq(5)", nRow).css('background', white3);
+                                    $("td:eq(6)", nRow).css('background', white3);
+                                    $("td:eq(7)", nRow).css('background', white3);
+                                    
+                                    mygreen = mygreen2;
+                                    urgreen = urgreen2;
+                                }
+                                else
+                                {
+                                    // make time/call darker
+                                    $("td:eq(0)", nRow).css('background', white2);
+                                    
+                                    // make ur-Cols a little darker
+                                    $("td:eq(4)", nRow).css('background', white2);
+                                    $("td:eq(5)", nRow).css('background', white2);
+                                    $("td:eq(6)", nRow).css('background', white2);
+                                    $("td:eq(7)", nRow).css('background', white2);
+                                }
+                                
+                                // make later time green
+                                var t1 = aData['D1'].toString();
+                                var t2 = aData['D2'].toString();
+                                if(t1>t2)
+                                    $("td:eq(1)", nRow).css('background', mygreen);
+                                if(t2>t1)
+                                    $("td:eq(5)", nRow).css('background', mygreen);
+                                
+                                //make higher SNR green
+                                var s1 = -99;
+                                var s2 = -99;
+                                if(aData['SNR1'] != ' ') s1 = aData['SNR1'];
+                                if(aData['SNR2'] != ' ') s2 = aData['SNR2'];
+                                
+                                if((s1-s2) > 0)
+                                {
+                                    if(aData['SNR1'].toString()!="")
+                                    {
+                                        $("td:eq(3)", nRow).css('background', mygreen);
+                                    }
+                                }
+                                
+                                if((s1-s2)<0)
+                                {
+                                    if(aData['SNR2'].toString()!="")
+                                    {
+                                        $("td:eq(7)", nRow).css('background', urgreen);
+                                    }
+                                }
+                                
+                                // vertical line
+                                $("td:eq(1)", nRow).css('border-left', "1px solid #000000");
+                                $("td:eq(5)", nRow).css('border-left', "1px solid #000000");
+                                
+                                // Format QRGs
+                                if(aData['QRG1'] > 0)
+                                {
+                                    var qrg = ((aData['QRG1'] / 1000000).toFixed(6)).toString();
+                                    var qrgnice = qrg.substring(0,5) + "." + qrg.substring(5,8);
+                                    $("td:eq(2)", nRow).text(qrgnice);
+                                }
+                                 
+                                if(aData['QRG2'] > 0)
+                                {
+                                    var qrg = ((aData['QRG2'] / 1000000).toFixed(6)).toString();
+                                    var qrgnice = qrg.substring(0,5) + "." + qrg.substring(5,8);
+                                    $("td:eq(6)", nRow).text(qrgnice);
+                                }
+                                
+                                // Format Distances
+                                if(aData['DIST1'] > 0)
+                                {
+                                    if(aData['DIST1'] >=1000)
+                                    {
+                                        var km = ((aData['DIST1'] / 1000).toFixed(3)).toString();
+                                        $("td:eq(4)", nRow).text(km);
+                                    }
+                                }
+                                
+                                if(aData['DIST2'] > 0)
+                                {
+                                    if(aData['DIST2'] >=1000)
+                                    {
+                                        var km = ((aData['DIST2'] / 1000).toFixed(3)).toString();
+                                        $("td:eq(8)", nRow).text(km);
+                                    }
+                                }
+                            },
+        }
+    );
+    
+    $.fn.dataTable.ext.errMode = 'none';    // supress ajax error message if table not exists
+    document.getElementById("untertitel1").innerHTML = config.call;
+    if(config.call_ur_sel == 'c1') document.getElementById("untertitel2").innerHTML = config.call_ur1;
+    if(config.call_ur_sel == 'c2') document.getElementById("untertitel2").innerHTML = config.call_ur2;
+    if(config.call_ur_sel == 'c3') document.getElementById("untertitel2").innerHTML = config.call_ur3;
+    if(config.call_ur_sel == 'c4') document.getElementById("untertitel2").innerHTML = config.call_ur4;
+    if(config.call_ur_sel == 'c5') document.getElementById("untertitel2").innerHTML = config.call_ur5;
+}
+
+function reloadData()
+{
+    CallsignTable.ajax.reload(null,false);
+}
+
+function clearTable()
+{
+    CallsignTable.clear().draw();
+}
+
+
+</script>
+
+
+<div id="headline" class="header"></div>
+<script>
+    printHeader();
+    setRadiobuttons(1);
+</script>
+<div id="untertitel" class="untertitel" style="width:1200px"></div>
+<script>
+    var ut1wid = "290px";
+    var ut2wid = "520px";
+    printUntertitel();
+</script>
+
+<div class="wsprmain" id="wsprmain">
+    <div class="panel" id="panel1">
+        <table id="actspots" class="cell-border" style="width:100%">
+            <thead>
+                <tr>
+                <th>Callsign</th>
+                <th>last heard</th>
+                <th>QRG [MHz]</th>
+                <th>best SNR [dB]</th>
+                <th>DIST [km]</th>
+                <th>last heard</th>
+                <th>QRG [MHz]</th>
+                <th>best SNR [dB]</th>
+                <th>DIST [km]</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+<a id="footline"></a>
+<script>footer();</script>
+</body>
+</html>
