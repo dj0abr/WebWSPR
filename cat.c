@@ -158,6 +158,10 @@ static int last_txmode = -1;
             }
             else
             {
+                // dummy write to check if the serIF is available
+                unsigned char dummy = 0x55;
+                write_port(&dummy,1);
+
                 // serial IF is open, read incoming bytes but ignore it
                 int reti = read_port();
                 if(reti == -1) 
@@ -307,7 +311,11 @@ static unsigned char c;
 // schreibe ein
 void write_port(unsigned char *data, int len)
 {
-    write(fd_ser, data, len);
+    int ret = write(fd_ser, data, len);
+    if(ret == -1)
+    {
+        fd_ser = -1;
+    }
 }
 
 // execute a CAT command

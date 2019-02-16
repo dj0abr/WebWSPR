@@ -10,5 +10,7 @@ enum _STATIDS_ {
     SYSALIVE = 6,
     SNDALIVE = 7,
     DECODER = 8,
+    MY2WAY = 9,
+    OT2WAY = 10,
     MAXSTATUSLINES
 };

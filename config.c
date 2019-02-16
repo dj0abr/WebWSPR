@@ -22,6 +22,7 @@
 #include "dds.h"
 
 void extract_band_array(FILE *fp);
+int hoursThisMonth();
 
 
 char callsign[30];
@@ -227,9 +228,30 @@ char txt[2000], *hp;
                 hp = strchr(txt,':');
                 char *p = cleanString(hp+1,1);
                 char *p1=strchr(p,'h');
-                if(p1) *p1=0;
-                else continue;
-                db_time = atoi(p);
+                if(p1) 
+                {
+                    *p1=0;
+                    db_time = atoi(p);  // hours
+                }
+                else
+                {
+                    char *p1=strchr(p,'d');
+                    if(p1) 
+                    {
+                        *p1=0;
+                        db_time = atoi(p);  // days
+                        db_time *= 24;      // to hours
+                    }
+                    else
+                    {
+                        char *p1=strchr(p,'m');
+                        if(p1) 
+                        {
+                            // "m" means: full actual month
+                            db_time = 1000; // 1000 means: use the full actual month
+                        }
+                    }
+                }
             }
 
             hp = strstr(txt,"civ_adr:");

@@ -43,7 +43,7 @@
 .untertitel_top
 { 
     font-family:verdana; 
-    font-size:24px; 
+    font-size:16px; 
     text-shadow: grey 1px 1px 1px; 
     color:black; 
     font-weight: 500;
@@ -161,6 +161,8 @@ function loadTopTable()
 	    	pageLength:     250,		// number of displayed line by default
 	    	bLengthChange:  false,
 	    	searching:      false,
+	    	bInfo:          false,
+            bPaginate:      false,
             fnRowCallback: function (nRow, aData, iDisplayIndex, iDisplayIndexFull) 
                             { 
                                 var white1 = '#ffffff';
@@ -180,11 +182,15 @@ function loadTopTable()
                                 
                                 if(aData['ID'] == 0)
                                 {
+                                    $("td:eq(0)", nRow).css('background', '#808080');
+                                    $("td:eq(1)", nRow).css('background', '#808080');
+                                    $("td:eq(2)", nRow).css('background', '#808080');
                                     $("td:eq(3)", nRow).css('background', '#808080');
+                                    $("td:eq(4)", nRow).css('background', '#808080');
                                     $("td:eq(3)", nRow).css('font-weight', '600');
                                     $("td:eq(3)", nRow).css('color', 'white');
-                                    $("td:eq(1)", nRow).css('color', 'white');
-                                    $("td:eq(2)", nRow).css('color', 'white');
+                                    $("td:eq(1)", nRow).css('color', '#808080');
+                                    $("td:eq(2)", nRow).css('color', '#808080');
                                 }
                                 
                                 if(aData['callsign'] == config.call)

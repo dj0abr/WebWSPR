@@ -7,7 +7,8 @@
 <script type="text/javascript" src="jquery.dataTables.min.js"></script>
 <link rel="stylesheet" type="text/css" href="jquery.dataTables.min.css">
 <script type="text/javascript" src="phpdir/wsprconfig.js?ver<%=DateTime.Now.Ticks.ToString()%>" type="text/javascript"></script>
-<script type="text/javascript" src="wspr_js.js"></script>
+<script type="text/javascript" src="wspr_js.js?ver<%=DateTime.Now.Ticks.ToString()%>" type="text/javascript"></script>
+<script type="text/javascript" src="countries.js"></script>
 <link rel="stylesheet" type="text/css" href="wspr_style.css">
 <style>
 
@@ -34,9 +35,10 @@
 
 table.cell-border tbody th, table.cell-border tbody td {
     padding: 3px;   /* row height */
-    padding-right: 15px;
+    padding-right: 5px;
     white-space: nowrap;
 }
+
 </style>
 </head>
 
@@ -56,6 +58,40 @@ function start()
 // Draw Table and update via Ajax
 var CallsignTable;
 var lastdate;
+var actcall;
+
+function calcPos(buchstabe, size) 
+{
+    if(typeof buchstabe === 'undefined')
+        return 0;
+    buchstabe = buchstabe.toLowerCase();
+    var code = buchstabe.charCodeAt(0);
+    var pos = -(code - 97) * size;
+    return pos;
+}
+    
+function getCountry(call)
+{
+    for(i=0; i<countries.length; i++)
+    {
+        var plen = countries[i][0].length;
+        var pf = call.substring(0,plen);
+        if(countries[i][0] == pf) 
+        {
+            var x = calcPos(countries[i][2][1], 20);
+            var y = calcPos(countries[i][2][0], 15);
+            
+            var c = countries[i][1];
+            if(c.length > 9) c = c.substring(0,9)+".";
+            
+            var simg = "<div style=\"float: left; background-image: url(https://dl.dropboxusercontent.com/s/izcyieh1iatr4n5/flags.png);height: 15px; width: 20px; margin-top:3px; background-position: "+x+"px "+y+"px\"></div>" + "<div>" + c + "</div>";
+            return simg;
+        }
+    }
+    
+    return " ";
+}
+
 
 function loadTable() 
 {
@@ -68,6 +104,7 @@ function loadTable()
                         { data: 'Dtime' },
                         { data: 'QRG' },
                         { data: 'Call' },
+                        { data: 'Country' },
                         { data: 'QTHloc' },
                         { data: 'TXpwr' },
                         { data: 'Drift' }
@@ -77,7 +114,7 @@ function loadTable()
             scrollX:        200,
             scrollCollapse: true,
             scroller:       true,
-	    	pageLength:     50,		// number of displayed line by default
+	    	pageLength:     100,		// number of displayed line by default
             columnDefs:   [
                                 { "width": "1px", "targets": 0 },
                                 { "width": "1px", "className": "dt-right", "targets": 1 },
@@ -95,6 +132,37 @@ function loadTable()
                                             var qrgnice = mhz + "." + ("00"+khz).slice(-3) + "." + ("00"+hz).slice(-5);
                                             return qrgnice;
                                         }
+                                        return data;
+                                    }     
+                                },
+                                { targets : [4],
+                                    render : function(data, type, row) 
+                                    {
+                                        actcall = data;
+                                        var s = "<div style=\"cursor: pointer;text-decoration: underline;\" onclick=\"window.open('https://www.qrz.com/db/" + actcall + "')\">" + data + "</div>";
+                                        return s;
+                                    }     
+                                },
+                                { targets : [5],
+                                    render : function(data, type, row) 
+                                    {
+                                        return getCountry(actcall);
+                                    }     
+                                },
+                                { targets : [6],
+                                    render : function(data, type, row) 
+                                    {
+                                        var q = data;
+                                        qthlocToLonLat(q);
+                                        var s = "<div style=\"cursor: pointer;text-decoration: underline;\" onclick=\"window.open('https://aprs.fi/#!lat="+lat+"&lng="+lon+"&z=8&mt=hybrid')\">" + data + "</div>";
+                                        return s;
+                                    }     
+                                },
+                                { targets : [8],
+                                    render : function(data, type, row) 
+                                    {
+                                        if(Number(data) > 10)
+                                            return 0;
                                         return data;
                                     }     
                                 },
@@ -124,6 +192,9 @@ function loadTable()
                                     $("td:eq(7)", nRow).css('background', white2);
                                 }
                                 lastdate = aData['DateTime'];
+                                
+                                $("td:eq(4)", nRow).css('font-weight', '700');
+                                $("td:eq(4)", nRow).css('color', '#404040');
                             },
         }
     );
@@ -161,6 +232,7 @@ function reloadData()
                 <th>DT</th>
                 <th>QRG</th>
                 <th>Call</th>
+                <th>Country</th>
                 <th>QTH</th>
                 <th>Pwr</th>
                 <th>DF</th>

@@ -71,10 +71,10 @@ function loadTable()
                                 { data: 'HEARD' },
                                 { data: 'QRG1' },
                                 { data: 'SNR1' },
-                                { data: 'DIST1' },
+                                { data: 'DIST1' , type: "num-fmt"},
                                 { data: 'QRG2' },
                                 { data: 'SNR2' },
-                                { data: 'DIST2' },
+                                { data: 'DIST2' , type: "num-fmt"},
                             ],
             order:          [[ 0, "desc" ]],
             scrollY:        650,	// vertical size
@@ -89,10 +89,19 @@ function loadTable()
                                     render : function(data, type, row) 
                                     {
                                         // convert database date to UTC
-                                        // FROM_UNIXTIME(a.datetime*10-62135596800,'%Y.%m.%d %H:%i')
-                                        var dsec = data * 10 - 62135596800;
-                                        var d = new Date(dsec * 1000);
+                                        // database has seconds elapsed since 2010
+                                        var t2010 = 1262300400;  // senconds of year 2010 (ref Unix Epoch)
+                                        var dsec = Number(data) + Number(t2010);
+                                        var d = new Date(dsec*1000);
                                         return d.getUTCFullYear() + "." + to2(d.getUTCMonth()+1) + "." + to2(d.getUTCDate())  + " " + to2(d.getUTCHours()) + ":" + to2(d.getUTCMinutes());
+                                    }     
+                                },
+                                { targets : [1],
+                                    render : function(data, type, row) 
+                                    {
+                                        actcall = data;
+                                        var s = "<div style=\"cursor: pointer;text-decoration: underline;\" onclick=\"window.open('https://www.qrz.com/db/" + actcall + "')\">" + data + "</div>";
+                                        return s;
                                     }     
                                 },
                                 { targets : [2,5],  // QRG column
@@ -105,20 +114,6 @@ function loadTable()
                                             var offset = calcOffset(data);
                                             var newtext = qrgnice + " <font color='#0000FF' size='1'> - " + offset;
                                             return '<span class="mycus-class2">'+newtext+'</span>';
-                                        }
-                                        return data;
-                                    }     
-                                },
-                                { targets : [4,7],  // distance column
-                                    render : function(data, type, row) 
-                                    {
-                                        if(data > 0)
-                                        {
-                                            if(data >=1000)
-                                            {
-                                                var km = ((data / 1000).toFixed(3)).toString();
-                                                return km;
-                                            }
                                         }
                                         return data;
                                     }     
@@ -204,7 +199,8 @@ function loadTable()
                                
                                 lastdate = aData['DATE'];
                                 
-                                //return nRow;
+                                $("td:eq(1)", nRow).css('font-weight', '700');
+                                $("td:eq(1)", nRow).css('color', '#404040');
                             },
         }
     );
@@ -235,7 +231,7 @@ function reloadData()
 <script>
     var ut1wid = "470px";
     var ut2wid = "420px";
-    printUntertitel();
+    printUntertitel_stat();
 </script>
 <div class="wsprmain" id="wsprmain">
     <div class="panel" id="panel1">

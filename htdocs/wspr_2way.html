@@ -81,21 +81,29 @@ function loadTable()
                                 { data: 'MYRXD' },
                                 { data: 'MYRXQRG' },
                                 { data: 'MYSNR' },
-                                { data: 'MYQTH' },
+                                { data: 'MYQTH', type: "num-fmt" },
                                 { data: 'MYTXD' },
                                 { data: 'MYTXQRG' },
                                 { data: 'MYTXSNR' },
-                                { data: 'MYTXQTH' },
+                                { data: 'MYTXQTH', type: "num-fmt"  },
                                 { data: 'URRXD' },
                                 { data: 'URRXQRG' },
                                 { data: 'URSNR' },
-                                { data: 'URQTH' },
+                                { data: 'URQTH', type: "num-fmt"  },
                                 { data: 'URTXD' },
                                 { data: 'URTXQRG' },
                                 { data: 'URTXSNR' },
-                                { data: 'URTXQTH' },
+                                { data: 'URTXQTH', type: "num-fmt"  },
                             ],
             columnDefs :    [
+                                { targets : [0],
+                                    render : function(data, type, row) 
+                                    {
+                                        actcall = data;
+                                        var s = "<div style=\"cursor: pointer;text-decoration: underline;\" onclick=\"window.open('https://www.qrz.com/db/" + actcall + "')\">" + data + "</div>";
+                                        return s;
+                                    }     
+                                },
                                 { targets : [1,5,9,13],
                                     render : function(data, type, row) 
                                     {
@@ -103,7 +111,8 @@ function loadTable()
                                         // FROM_UNIXTIME(a.datetime*10-62135596800,'%Y.%m.%d %H:%i')
                                         if(data.length > 1)
                                         {
-                                            var dsec = data * 10 - 62135596800;
+                                            var t2010 = 1262300400;  // senconds of year 2010 (ref Unix Epoch)
+                                            var dsec = Number(data) + Number(t2010);
                                             var d = new Date(dsec * 1000);
                                             return d.getUTCFullYear() + "." + to2(d.getUTCMonth()+1) + "." + to2(d.getUTCDate())  + " " + to2(d.getUTCHours()) + ":" + to2(d.getUTCMinutes());
                                         }
@@ -128,6 +137,7 @@ function loadTable()
                                         return data;
                                     }     
                                 },
+                                { className: "dt-right", "targets": [4,8,12,16] },
                                 { className: "dt-right", "targets": [2,6,10,14] },
                                 { className: "dt-right", "targets": [3,7,11,15] },
                                 { "sWidth": "1px", "aTargets": [ 3,7,11,15] },
@@ -248,6 +258,9 @@ function loadTable()
                                 $("td:eq(8)", nRow).css('border-right', "3px solid #000000");
                                 $("td:eq(12)", nRow).css('border-right', "1px solid #000000");
                                 $("td:eq(16)", nRow).css('border-right', "1px solid #000000");
+                                
+                                $("td:eq(0)", nRow).css('font-weight', '700');
+                                $("td:eq(0)", nRow).css('color', '#404040');
                             },
         }
     );
@@ -298,19 +311,19 @@ function clearTable()
                 <th>RX Date</th>
                 <th>QRG</th>
                 <th>SNR dB</th>
-                <th>QTH</th>
+                <th>Dist</th>
                 <th>TX Date</th>
                 <th>QRG</th>
                 <th>SNR dB</th>
-                <th>QTH</th>
+                <th>Dist</th>
                 <th>RX Date</th>
                 <th>QRG</th>
                 <th>SNR dB</th>
-                <th>QTH</th>
+                <th>Dist</th>
                 <th>TX Date</th>
                 <th>QRG</th>
                 <th>SNR dB</th>
-                <th>QTH</th>
+                <th>Dist</th>
                 </tr>
             </thead>
         </table>

@@ -1,0 +1,17 @@
+Minimal Image für Raspi
+=======================
+
+1) Image auf SD Karte kopieren (min 4GB)
+
+2) In den Raspi stecken:
+* die SD Karte
+* ein Netzwerkkabel (kein WiFi)
+* einen WX Empfänger-Stick
+
+3) Stromversorgung anschließen ... fertig
+
+Im Router nachsehen welche IP der Raspi bekommen hat,
+er meldet sich beim Router mit dem Namen "box" an.
+
+Portweiterleitung einstellen.
+

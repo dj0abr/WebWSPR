@@ -1,0 +1,768 @@
+HB3Y Liechtenstein
+3DA Swaziland
+3DB Swaziland
+3DC Swaziland
+3DD Swaziland
+3DE Swaziland
+3DF Swaziland
+3DG Swaziland
+3DH Swaziland
+3DI Swaziland
+3DJ Swaziland
+3DK Swaziland
+3DL Swaziland
+3DM Swaziland
+3DN Fiji
+3DO Fiji
+3DP Fiji
+3DQ Fiji
+3DR Fiji
+3DS Fiji
+3DT Fiji
+3DU Fiji
+3DV Fiji
+3DW Fiji
+3DX Fiji
+3DY Fiji
+3DZ Fiji
+9M0 Spratly Islands
+BV9 Spratly Islands
+DX0 Spratly Islands
+HB0 Liechtenstein
+HBL Liechtenstein
+RA6 Chechnya
+SSA Egypt
+SSB Egypt
+SSC Egypt
+SSD Egypt
+SSE Egypt
+SSF Egypt
+SSG Egypt
+SSH Egypt
+SSI Egypt
+SSJ Egypt
+SSK Egypt
+SSL Egypt
+SSM Egypt
+0S Principality of Seborga
+1A Sovereign Military Order of Malta
+1B Northern Cyprus or Blenheim Reef
+1G Geyser Reef
+1L Liberland
+1M Minerva Reefs
+1S Principality of Sealand
+1Z Kayin State
+3A Monaco
+3B Mauritius
+3C Equatorial Guinea
+3E Panama
+3F Panama
+3G Chile
+3H People's Republic of China
+3I People's Republic of China
+3J People's Republic of China
+3K People's Republic of China
+3L People's Republic of China
+3M People's Republic of China
+3N People's Republic of China
+3O People's Republic of China
+3P People's Republic of China
+3Q People's Republic of China
+3R People's Republic of China
+3S People's Republic of China
+3T People's Republic of China
+3U People's Republic of China
+3V Tunisia
+3W Vietnam
+3X Guinea
+3Y Norway
+3Z Poland
+4A Mexico
+4B Mexico
+4C Mexico
+4D Philippines
+4E Philippines
+4F Philippines
+4G Philippines
+4H Philippines
+4I Philippines
+4J Azerbaijan
+4K Azerbaijan
+4L Georgia
+4M Venezuela
+4O Montenegro
+4P Sri Lanka
+4Q Sri Lanka
+4R Sri Lanka
+4S Sri Lanka
+4T Peru
+4U United Nations (non-geographical)
+4V Haiti
+4W East Timor
+4X Israel
+4Y International Civil Aviation Organization (non-geographical)
+4Z Israel
+5A Libya
+5B Cyprus
+5C Morocco
+5D Morocco
+5E Morocco
+5F Morocco
+5G Morocco
+5H Tanzania
+5I Tanzania
+5J Colombia
+5K Colombia
+5L Liberia
+5M Liberia
+5N Nigeria
+5O Nigeria
+5P Denmark
+5Q Denmark
+5R Madagascar
+5S Madagascar
+5T Mauritania
+5U Niger
+5V Togo
+5W Western Samoa
+5X Uganda
+5Y Kenya
+5Z Kenya
+6A Egypt
+6B Egypt
+6C Syria
+6D Mexico
+6E Mexico
+6F Mexico
+6G Mexico
+6H Mexico
+6I Mexico
+6J Mexico
+6K South Korea
+6L South Korea
+6M South Korea
+6N South Korea
+6O Somalia
+6P Pakistan
+6Q Pakistan
+6R Pakistan
+6S Pakistan
+6T Sudan
+6U Sudan
+6V Senegal
+6W Senegal
+6X Madagascar
+6Y Jamaica
+6Z Liberia
+7A Indonesia
+7B Indonesia
+7C Indonesia
+7D Indonesia
+7E Indonesia
+7F Indonesia
+7G Indonesia
+7H Indonesia
+7I Indonesia
+7J Japan
+7K Japan
+7L Japan
+7M Japan
+7N Japan
+7O Yemen
+7P Lesotho
+7Q Malawi
+7R Algeria
+7S Sweden
+7T Algeria
+7U Algeria
+7V Algeria
+7W Algeria
+7X Algeria
+7Y Algeria
+7Z Saudi Arabia
+8A Indonesia
+8B Indonesia
+8C Indonesia
+8D Indonesia
+8E Indonesia
+8F Indonesia
+8G Indonesia
+8H Indonesia
+8I Indonesia
+8J Japan
+8K Japan
+8L Japan
+8M Japan
+8N Japan
+8O Botswana
+8P Barbados
+8Q Maldives
+8R Guyana
+8S Sweden
+8T India
+8U India
+8V India
+8W India
+8X India
+8Y India
+8Z Saudi Arabia
+9A Croatia
+9B Iran
+9C Iran
+9D Iran
+9E Ethiopia
+9F Ethiopia
+9G Ghana
+9H Malta
+9I Zambia
+9J Zambia
+9K Kuwait
+9L Sierra Leone
+9M Malaysia
+9N Nepal
+9O Democratic Republic of the Congo
+9P Democratic Republic of the Congo
+9Q Democratic Republic of the Congo
+9R Democratic Republic of the Congo
+9S Democratic Republic of the Congo
+9T Democratic Republic of the Congo
+9U Burundi
+9V Singapore
+9W Malaysia
+9X Rwanda
+9Y Trinidad and Tobago
+9Z Trinidad and Tobago
+A2 Botswana
+A3 Tonga
+A4 Oman
+A5 Bhutan
+A6 United Arab Emirates
+A7 Qatar
+A8 Liberia
+A9 Bahrain
+AA United States
+AB United States
+AC United States
+AD United States
+AE United States
+AF United States
+AG United States
+AH United States
+AI United States
+AJ United States
+AK United States
+AL United States
+AM Spain
+AN Spain
+AO Spain
+AP Pakistan
+AQ Pakistan
+AR Pakistan
+AS Pakistan
+AT India
+AU India
+AV India
+AW India
+AX Australia
+AY Argentina
+AZ Argentina
+BM Taiwan
+BN Taiwan
+BO Taiwan
+BP Taiwan
+BQ Taiwan
+BU Taiwan
+BV Taiwan
+BW Taiwan
+BX Taiwan
+C2 Nauru
+C3 Andorra
+C4 Cyprus
+C5 The Gambia
+C6 Bahamas
+C7 World Meteorological Organization (non-geographical)
+C8 Mozambique
+C9 Mozambique
+CA Chile
+CB Chile
+CC Chile
+CD Chile
+CE Chile
+CF Canada
+CG Canada
+CH Canada
+CI Canada
+CJ Canada
+CK Canada
+CL Cuba
+CM Cuba
+CN Morocco
+CO Cuba
+CP Bolivia
+CQ Portugal
+CR Portugal
+CS Portugal
+CT Portugal
+CU Portugal
+CV Uruguay
+CW Uruguay
+CX Uruguay
+CY Canada
+CZ Canada
+D0 Donetsk
+D1 Donetsk
+D2 Angola
+D3 Angola
+D4 Cape Verde
+D5 Liberia
+D6 Comoros
+D7 South Korea
+D8 South Korea
+D9 South Korea
+DA Germany
+DB Germany
+DC Germany
+DD Germany
+DE Germany
+DF Germany
+DG Germany
+DH Germany
+DI Germany
+DJ Germany
+DK Germany
+DL Germany
+DM Germany
+DN Germany
+DO Germany
+DP Germany
+DQ Germany
+DR Germany
+DS South Korea
+DT South Korea
+DU Philippines
+DV Philippines
+DW Philippines
+DX Philippines
+DY Philippines
+DZ Philippines
+E2 Thailand
+E3 Eritrea
+E4 Palestine
+E5 Cook Islands
+E6 Niue
+E7 Bosnia and Herzegovina
+EA Spain
+EB Spain
+EC Spain
+ED Spain
+EE Spain
+EF Spain
+EG Spain
+EH Spain
+EI Ireland
+EJ Ireland
+EK Armenia
+EL Liberia
+EM Ukraine
+EN Ukraine
+EO Ukraine
+EP Iran
+EQ Iran
+ER Moldova
+ES Estonia
+ET Ethiopia
+EU Belarus
+EV Belarus
+EW Belarus
+EX Kyrgyzstan
+EY Tajikistan
+EZ Turkmenistan
+H2 Cyprus
+H3 Panama
+H4 Solomon Islands
+H5 Bophuthatswana
+H6 Nicaragua
+H7 Nicaragua
+H8 Panama
+H9 Panama
+HA Hungary
+HB Switzerland
+HC Ecuador
+HD Ecuador
+HE Switzerland
+HF Poland
+HG Hungary
+HH Haiti
+HI Dominican Republic
+HJ Colombia
+HK Colombia
+HL South Korea
+HM North Korea
+HN Iraq
+HO Panama
+HP Panama
+HQ Honduras
+HR Honduras
+HS Thailand
+HT Nicaragua
+HU El Salvador
+HV Vatican City
+HW France / overseas departments / territories
+HX France / overseas departments / territories
+HY France / overseas departments / territories
+HZ Saudi Arabia
+J2 Djibouti
+J3 Grenada
+J4 Greece
+J5 Guinea-Bissau
+J6 Saint Lucia
+J7 Dominica
+J8 Saint Vincent and the Grenadines
+JA Japan
+JB Japan
+JC Japan
+JD Japan
+JE Japan
+JF Japan
+JG Japan
+JH Japan
+JI Japan
+JJ Japan
+JK Japan
+JL Japan
+JM Japan
+JN Japan
+JO Japan
+JP Japan
+JQ Japan
+JR Japan
+JS Japan
+JT Mongolia
+JU Mongolia
+JV Mongolia
+JW Norway
+JX Norway
+JY Jordan
+JZ Indonesia
+L2 Argentina
+L3 Argentina
+L4 Argentina
+L5 Argentina
+L6 Argentina
+L7 Argentina
+L8 Argentina
+L9 Argentina
+LA Norway
+LB Norway
+LC Norway
+LD Norway
+LE Norway
+LF Norway
+LG Norway
+LH Norway
+LI Norway
+LJ Norway
+LK Norway
+LL Norway
+LM Norway
+LN Norway
+LO Argentina
+LP Argentina
+LQ Argentina
+LR Argentina
+LS Argentina
+LT Argentina
+LU Argentina
+LV Argentina
+LW Argentina
+LX Luxembourg
+LY Lithuania
+LZ Bulgaria
+O1 South Ossetia
+OA Peru
+OB Peru
+OC Peru
+OD Lebanon
+OE Austria
+OF Finland
+OG Finland
+OH Finland
+OI Finland
+OJ Finland
+OK Czech Republic
+OL Czech Republic
+OM Slovakia
+ON Belgium
+OO Belgium
+OP Belgium
+OQ Belgium
+OR Belgium
+OS Belgium
+OT Belgium
+OU Denmark
+OV Denmark
+OW Denmark
+OX Denmark
+OY Denmark
+OZ Denmark
+P2 Papua New Guinea
+P3 Cyprus
+P4 Aruba
+P5 North Korea
+P6 North Korea
+P7 North Korea
+P8 North Korea
+P9 North Korea
+PA Netherlands
+PB Netherlands
+PC Netherlands
+PD Netherlands
+PE Netherlands
+PF Netherlands
+PG Netherlands
+PH Netherlands
+PI Netherlands
+PJ Netherlands - former Netherlands Antilles
+PK Indonesia
+PL Indonesia
+PM Indonesia
+PN Indonesia
+PO Indonesia
+PP Brazil
+PQ Brazil
+PR Brazil
+PS Brazil
+PT Brazil
+PU Brazil
+PV Brazil
+PW Brazil
+PX Brazil
+PY Brazil
+PZ Suriname
+S0 Western Sahara
+S2 Bangladesh
+S3 Bangladesh
+S5 Slovenia
+S6 Singapore
+S7 Seychelles
+S8 South Africa
+S9 São Tomé and Príncipe
+SA Sweden
+SB Sweden
+SC Sweden
+SD Sweden
+SE Sweden
+SF Sweden
+SG Sweden
+SH Sweden
+SI Sweden
+SJ Sweden
+SK Sweden
+SL Sweden
+SM Sweden
+SN Poland
+SO Poland
+SP Poland
+SQ Poland
+SR Poland
+SS Sudan
+ST Sudan
+SU Egypt
+SV Greece
+SW Greece
+SX Greece
+SY Greece
+SZ Greece
+T0 Principality of Seborga
+T1 Transnistria
+T2 Tuvalu
+T3 Kiribati
+T4 Cuba
+T5 Somalia
+T6 Afghanistan
+T7 San Marino
+T8 Palau
+TA Turkey
+TB Turkey
+TC Turkey
+TD Guatemala
+TE Costa Rica
+TF Iceland
+TG Guatemala
+TH France / overseas departments / territories
+TI Costa Rica
+TJ Cameroon
+TK France / overseas departments / territories
+TL Central African Republic
+TM France / overseas departments / territories
+TN Congo
+TO France / overseas departments / territories
+TP France / overseas departments / territories
+TQ France / overseas departments / territories
+TR Gabon
+TS Tunisia
+TT Chad
+TU Ivory Coast
+TV France / overseas departments / territories
+TW France / overseas departments / territories
+TX France / overseas departments / territories
+TY Benin
+TZ Mali
+UA Russia
+UB Russia
+UC Russia
+UD Russia
+UE Russia
+UF Russia
+UG Russia
+UH Russia
+UI Russia
+UJ Uzbekistan
+UK Uzbekistan
+UL Uzbekistan
+UM Uzbekistan
+UN Kazakhstan
+UO Kazakhstan
+UP Kazakhstan
+UQ Kazakhstan
+UR Ukraine
+US Ukraine
+UT Ukraine
+UU Ukraine
+UV Ukraine
+UW Ukraine
+UX Ukraine
+UY Ukraine
+UZ Ukraine
+V2 Antigua and Barbuda
+V3 Belize
+V4 Saint Kitts and Nevis
+V5 Namibia
+V6 Federated States of Micronesia
+V7 Marshall Islands
+V8 Brunei
+VA Canada
+VB Canada
+VC Canada
+VD Canada
+VE Canada
+VF Canada
+VG Canada
+VH Australia
+VI Australia
+VJ Australia
+VK Australia
+VL Australia
+VM Australia
+VN Australia
+VO Canada (Newfoundland)
+VP United Kingdom / overseas territories / dependencies
+VQ United Kingdom / overseas territories / dependencies
+VR Hong Kong
+VS United Kingdom
+VT India
+VU India
+VV India
+VW India
+VX Canada
+VY Canada
+VZ Australia
+XA Mexico
+XB Mexico
+XC Mexico
+XD Mexico
+XE Mexico
+XF Mexico
+XG Mexico
+XH Mexico
+XI Mexico
+XJ Canada
+XK Canada
+XL Canada
+XM Canada
+XN Canada
+XO Canada
+XP Denmark
+XQ Chile
+XR Chile
+XS People's Republic of China
+XT Burkina Faso
+XU Cambodia
+XV Vietnam
+XW Laos
+XX Macao
+XY Burma
+XZ Burma
+Y2 Germany
+Y3 Germany
+Y4 Germany
+Y5 Germany
+Y6 Germany
+Y7 Germany
+Y8 Germany
+Y9 Germany
+YA Afghanistan
+YB Indonesia
+YC Indonesia
+YD Indonesia
+YE Indonesia
+YF Indonesia
+YG Indonesia
+YH Indonesia
+YI Iraq
+YJ Vanuatu
+YK Syria
+YL Latvia
+YM Turkey
+YN Nicaragua
+YO Romania
+YP Romania
+YQ Romania
+YR Romania
+YS El Salvador
+YT Serbia
+YU Serbia
+YV Venezuela
+YW Venezuela
+YX Venezuela
+YY Venezuela
+Z2 Zimbabwe
+Z3 Republic of Macedonia
+Z6 Kosovo
+Z8 South Sudan
+ZA Albania
+ZB United Kingdom / overseas territories / dependencies
+ZC United Kingdom / overseas territories / dependencies
+ZD United Kingdom / overseas territories / dependencies
+ZE United Kingdom / overseas territories / dependencies
+ZF United Kingdom / overseas territories / dependencies
+ZG United Kingdom / overseas territories / dependencies
+ZH United Kingdom / overseas territories / dependencies
+ZI United Kingdom / overseas territories / dependencies
+ZJ United Kingdom / overseas territories / dependencies
+ZK New Zealand
+ZL New Zealand
+ZM New Zealand
+ZN United Kingdom / overseas territories / dependencies
+ZO United Kingdom / overseas territories / dependencies
+ZP Paraguay
+ZQ United Kingdom / overseas territories / dependencies
+ZR South Africa
+ZS South Africa
+ZT South Africa
+ZU South Africa
+ZV Brazil
+ZW Brazil
+ZX Brazil
+ZY Brazil
+ZZ Brazil
+2 United Kingdom / overseas territories / dependencies
+B People's Republic of China
+F France / overseas departments / territories
+G United Kingdom / overseas territories / dependencies
+I Italy
+K United States
+M United Kingdom / overseas territories / dependencies
+N United States
+R Russia
+W United States

@@ -23,8 +23,13 @@
 
 .panel
 {
-    width: 1200px;
+    width: 590px;
     font-size: 12px;
+}
+
+.spacer
+{
+    width: 20px;;
 }
 
 /* make the table cells more compact */
@@ -53,20 +58,27 @@ function start()
     loadTable();
     
     setInterval(CurrentDate, 1000);
-    setInterval(reloadData, 4000);
+    setInterval(reloadData, 1000);
     
     document.getElementById("header_call").innerHTML = config.call + " " + config.qthloc;
 }
 
 // Draw Table and update via Ajax
-var CallsignTable;
+var CallsignTable,CallsignTable2;
 
-function loadTable() 
+function loadTable()
 {
-    CallsignTable = $('#actspots').DataTable( 
+    loadTablePhys('#actspots',"JSON_STAT.txt");
+    loadTablePhys2('#actspots2',"r_JSON_STAT.txt");
+
+}
+
+function loadTablePhys( tabname,filename) 
+{
+    CallsignTable = $(tabname).DataTable( 
         {
             ajax:    ({
-                        url: "JSON_STAT.txt",
+                        url: filename,
                      }),
             columns:        [
                                 { data: 'DESCR' },
@@ -74,18 +86,6 @@ function loadTable()
                                 { data: 'CALL2' },
                             ],
             columnDefs:     [
-                                { targets : [1,2],  // Date
-                                    render : function(data, type, row) 
-                                    {
-                                        if(data.length != 10) return data;
-                                        //if(row!=0 && row != 1) return data;
-                                        // convert database date to UTC
-                                        // FROM_UNIXTIME(a.datetime*10-62135596800,'%Y.%m.%d %H:%i')
-                                        var dsec = data * 10 - 62135596800;
-                                        var d = new Date(dsec * 1000);
-                                        return d.getUTCFullYear() + "." + to2(d.getUTCMonth()+1) + "." + d.getUTCDate()  + " " + to2(d.getUTCHours()) + ":" + to2(d.getUTCMinutes());
-                                    }     
-                                },
                                 { "className": "dt-right", "targets": 1 },
                                 { "className": "dt-right", "targets": 2 },
                             ],
@@ -97,89 +97,222 @@ function loadTable()
             bLengthChange:  false,
             searching:      false,
             bSort:          false,
+            bInfo:          false,
+            bPaginate:      false,
             fnRowCallback: function (nRow, aData, iDisplayIndex, iDisplayIndexFull) 
                             { 
-                                var white1 = '#ffffff';
-                                var white2 = '#f8f8f8';
-                                
-                                var green = '#e0ffe0';
-                                
-                                // alternate lines
-                                if(iDisplayIndex & 1)
+                                // Time-Titles
+                                var darkgrey = '#404040';
+                                if(iDisplayIndex == 0 || iDisplayIndex == 9 || iDisplayIndex == 18 || iDisplayIndex == 27)
                                 {
-                                    // darker lines
-                                    // make time/call darker
-                                    $("td:eq(0)", nRow).css('background', white2);
-                                    $("td:eq(1)", nRow).css('background', white2);
-                                    $("td:eq(2)", nRow).css('background', white2);
+                                    $("td:eq(0)", nRow).css('background', darkgrey);
+                                    $("td:eq(1)", nRow).css('background', darkgrey);
+                                    $("td:eq(2)", nRow).css('background', darkgrey);
                                     
-                                    green = '#d8f8d8';
+                                    $("td:eq(0)", nRow).css('font-weight', '800');
+                                    $("td:eq(0)", nRow).css('color', 'white');
+                                    $("td:eq(1)", nRow).css('font-weight', '800');
+                                    $("td:eq(1)", nRow).css('color', 'white');
+                                    $("td:eq(2)", nRow).css('font-weight', '800');
+                                    $("td:eq(2)", nRow).css('color', 'white');
                                 }
                                 else
                                 {
-                                    // make time/call darker
-                                    $("td:eq(0)", nRow).css('background', white1);
-                                    $("td:eq(1)", nRow).css('background', white1);
-                                    $("td:eq(2)", nRow).css('background', white1);
-                                }
-                                
-                                // make better values green
-                                if(iDisplayIndex < 2) return;
-                                
-                                if(Number(aData['CALL1']) > Number(aData['CALL2']))
-                                    $("td:eq(1)", nRow).css('background', green);
-                                
-                                if(Number(aData['CALL1']) < Number(aData['CALL2']))
-                                    $("td:eq(2)", nRow).css('background', green);
-                                
-                                // format distance
-                                if(iDisplayIndex == 6 || iDisplayIndex == 7)
-                                {
-                                    var km=0;
+                                    var white1 = '#ffffff';
+                                    var white2 = '#f8f8f8';
                                     
-                                    if(aData['CALL1'] >=1000)
-                                        km = ((aData['CALL1'] / 1000).toFixed(3)).toString();
-                                    else
-                                        km = aData['CALL1'];
-
-                                    $("td:eq(1)", nRow).text(km + " km");
+                                    var green = '#e0ffe0';
                                     
-                                    if(aData['CALL2'] >=1000)
-                                        km = ((aData['CALL2'] / 1000).toFixed(3)).toString();
+                                    // alternate lines
+                                    if(iDisplayIndex & 1)
+                                    {
+                                        // darker lines
+                                        // make time/call darker
+                                        $("td:eq(0)", nRow).css('background', white2);
+                                        $("td:eq(1)", nRow).css('background', white2);
+                                        $("td:eq(2)", nRow).css('background', white2);
+                                        
+                                        green = '#d8f8d8';
+                                    }
                                     else
-                                        km = aData['CALL2'];
+                                    {
+                                        // make time/call darker
+                                        $("td:eq(0)", nRow).css('background', white1);
+                                        $("td:eq(1)", nRow).css('background', white1);
+                                        $("td:eq(2)", nRow).css('background', white1);
+                                    }
+                                    
+                                    // make better values green
+                                    if(iDisplayIndex == 1 || iDisplayIndex == 2 || iDisplayIndex == 3 || iDisplayIndex == 4 || 
+                                       iDisplayIndex == 10 || iDisplayIndex == 11 || iDisplayIndex == 12 || iDisplayIndex == 13 ||
+                                         iDisplayIndex == 7 || iDisplayIndex == 8 || iDisplayIndex == 16 || iDisplayIndex == 17)
+                                    {
+                                    if(Number(aData['CALL1']) > Number(aData['CALL2']))
+                                        $("td:eq(1)", nRow).css('background', green);
+                                    
+                                    if(Number(aData['CALL1']) < Number(aData['CALL2']))
+                                        $("td:eq(2)", nRow).css('background', green);
+                                    }
+                                    
+                                    // format distance
+                                    if(iDisplayIndex == 5 || iDisplayIndex == 6 || iDisplayIndex == 14 || iDisplayIndex == 15)
+                                    {
+                                        var km=0;
+                                        
+                                        if(aData['CALL1'] >=1000)
+                                            km = ((aData['CALL1'] / 1000).toFixed(3)).toString();
+                                        else
+                                            km = aData['CALL1'];
 
-                                    $("td:eq(2)", nRow).text(km + " km");
-                                }
-                                
-                                // format snr
-                                if(iDisplayIndex == 8 || iDisplayIndex == 9)
-                                {
-                                    $("td:eq(1)", nRow).text(Number(aData['CALL1']).toFixed(1) + " dB");
-                                    $("td:eq(2)", nRow).text(Number(aData['CALL2']).toFixed(1) + " dB");
+                                        $("td:eq(1)", nRow).text(km + " km");
+                                        
+                                        if(aData['CALL2'] >=1000)
+                                            km = ((aData['CALL2'] / 1000).toFixed(3)).toString();
+                                        else
+                                            km = aData['CALL2'];
+
+                                        $("td:eq(2)", nRow).text(km + " km");
+                                    }
+                                    
+                                    // format snr
+                                    if(iDisplayIndex == 7 || iDisplayIndex == 8 || iDisplayIndex == 16 || iDisplayIndex == 17)
+                                    {
+                                        $("td:eq(1)", nRow).text(Number(aData['CALL1']).toFixed(1) + " dB");
+                                        $("td:eq(2)", nRow).text(Number(aData['CALL2']).toFixed(1) + " dB");
+                                    }
                                 }
                             },
         }
     );
     
     $.fn.dataTable.ext.errMode = 'none';    // supress ajax error message if table not exists
-    document.getElementById("untertitel1").innerHTML = config.call;
-    if(config.call_ur_sel == 'c1') document.getElementById("untertitel2").innerHTML = config.call_ur1;
-    if(config.call_ur_sel == 'c2') document.getElementById("untertitel2").innerHTML = config.call_ur2;
-    if(config.call_ur_sel == 'c3') document.getElementById("untertitel2").innerHTML = config.call_ur3;
-    if(config.call_ur_sel == 'c4') document.getElementById("untertitel2").innerHTML = config.call_ur4;
-    if(config.call_ur_sel == 'c5') document.getElementById("untertitel2").innerHTML = config.call_ur5;
+}
+
+function loadTablePhys2( tabname,filename) 
+{
+    CallsignTable2 = $(tabname).DataTable( 
+        {
+            ajax:    ({
+                        url: filename,
+                     }),
+            columns:        [
+                                { data: 'DESCR' },
+                                { data: 'CALL1' },
+                                { data: 'CALL2' },
+                            ],
+            columnDefs:     [
+                                { "className": "dt-right", "targets": 1 },
+                                { "className": "dt-right", "targets": 2 },
+                            ],
+            scrollY:        650,	// vertical size
+            scrollX:        200,
+            scrollCollapse: true,
+            scroller:       true,
+	    	pageLength:     250,		// number of displayed line by default
+            bLengthChange:  false,
+            searching:      false,
+            bSort:          false,
+            bInfo:          false,
+            bPaginate:      false,
+            fnRowCallback: function (nRow, aData, iDisplayIndex, iDisplayIndexFull) 
+                            { 
+                                // Time-Titles
+                                var darkgrey = '#404040';
+                                if(iDisplayIndex == 0 || iDisplayIndex == 9 || iDisplayIndex == 18 || iDisplayIndex == 27)
+                                {
+                                    $("td:eq(0)", nRow).css('background', darkgrey);
+                                    $("td:eq(1)", nRow).css('background', darkgrey);
+                                    $("td:eq(2)", nRow).css('background', darkgrey);
+                                    
+                                    $("td:eq(0)", nRow).css('font-weight', '800');
+                                    $("td:eq(0)", nRow).css('color', 'white');
+                                    $("td:eq(1)", nRow).css('font-weight', '800');
+                                    $("td:eq(1)", nRow).css('color', 'white');
+                                    $("td:eq(2)", nRow).css('font-weight', '800');
+                                    $("td:eq(2)", nRow).css('color', 'white');
+                                }
+                                else
+                                {
+                                    var white1 = '#ffffff';
+                                    var white2 = '#f8f8f8';
+                                    
+                                    var green = '#e0ffe0';
+                                    
+                                    // alternate lines
+                                    if(iDisplayIndex & 1)
+                                    {
+                                        // darker lines
+                                        // make time/call darker
+                                        $("td:eq(0)", nRow).css('background', white2);
+                                        $("td:eq(1)", nRow).css('background', white2);
+                                        $("td:eq(2)", nRow).css('background', white2);
+                                        
+                                        green = '#d8f8d8';
+                                    }
+                                    else
+                                    {
+                                        // make time/call darker
+                                        $("td:eq(0)", nRow).css('background', white1);
+                                        $("td:eq(1)", nRow).css('background', white1);
+                                        $("td:eq(2)", nRow).css('background', white1);
+                                    }
+                                    
+                                    // make better values green
+                                    if(iDisplayIndex == 1 || iDisplayIndex == 2 || iDisplayIndex == 3 || iDisplayIndex == 4 || 
+                                       iDisplayIndex == 10 || iDisplayIndex == 11 || iDisplayIndex == 12 || iDisplayIndex == 13 ||
+                                         iDisplayIndex == 7 || iDisplayIndex == 8 || iDisplayIndex == 16 || iDisplayIndex == 17)
+                                    {
+                                    if(Number(aData['CALL1']) > Number(aData['CALL2']))
+                                        $("td:eq(1)", nRow).css('background', green);
+                                    
+                                    if(Number(aData['CALL1']) < Number(aData['CALL2']))
+                                        $("td:eq(2)", nRow).css('background', green);
+                                    }
+                                    
+                                    // format distance
+                                    if(iDisplayIndex == 5 || iDisplayIndex == 6 || iDisplayIndex == 14 || iDisplayIndex == 15)
+                                    {
+                                        var km=0;
+                                        
+                                        if(aData['CALL1'] >=1000)
+                                            km = ((aData['CALL1'] / 1000).toFixed(3)).toString();
+                                        else
+                                            km = aData['CALL1'];
+
+                                        $("td:eq(1)", nRow).text(km + " km");
+                                        
+                                        if(aData['CALL2'] >=1000)
+                                            km = ((aData['CALL2'] / 1000).toFixed(3)).toString();
+                                        else
+                                            km = aData['CALL2'];
+
+                                        $("td:eq(2)", nRow).text(km + " km");
+                                    }
+                                    
+                                    // format snr
+                                    if(iDisplayIndex == 7 || iDisplayIndex == 8 || iDisplayIndex == 16 || iDisplayIndex == 17)
+                                    {
+                                        $("td:eq(1)", nRow).text(Number(aData['CALL1']).toFixed(1) + " dB");
+                                        $("td:eq(2)", nRow).text(Number(aData['CALL2']).toFixed(1) + " dB");
+                                    }
+                                }
+                            },
+        }
+    );
+    
+    $.fn.dataTable.ext.errMode = 'none';    // supress ajax error message if table not exists
 }
 
 function reloadData()
 {
     CallsignTable.ajax.reload(null,false);
+    CallsignTable2.ajax.reload(null,false);
 }
 
 function clearTable()
 {
     CallsignTable.clear().draw();
-    
+    CallsignTable2.clear().draw();
 }
 
 </script>
@@ -191,20 +324,19 @@ function clearTable()
 </script>
 <div id="untertitel" class="untertitel" style="width:1200px"></div>
 <script>
-    var ut1wid = "540px";
-    var ut2wid = "380px";
-    printUntertitel();
+    var ut1wid = "470px";
+    var ut2wid = "420px";
+    printUntertitel_stat();
 </script>
-
-<div class="untertitel" style="width:1200px">
-    <div class="untertitel0" id="untertitel0" style="width:300px"></div>
-    <div class="untertitel1" id="untertitel1" style="width:320px"></div>
-    <div class="untertitel2" id="untertitel2" style="width:400px"></div>
-</div>
-
 <div class="wsprmain" id="wsprmain">
     <div class="panel" id="panel1">
         <table id="actspots" class="cell-border" style="width:100%">
+        </table>
+    </div>
+    <div class="spacer" id="spacer">
+    </div>
+    <div class="panel" id="panel2">
+        <table id="actspots2" class="cell-border" style="width:100%">
         </table>
     </div>
 </div>

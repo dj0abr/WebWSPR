@@ -75,20 +75,28 @@ function loadTable()
                                 { data: 'D1' },
                                 { data: 'QRG1' },
                                 { data: 'SNR1' },
-                                { data: 'DIST1' },
+                                { data: 'DIST1', type: "num-fmt" },
                                 { data: 'D2' },
                                 { data: 'QRG2' },
                                 { data: 'SNR2' },
-                                { data: 'DIST2' },
+                                { data: 'DIST2', type: "num-fmt"  },
                             ],
             columnDefs:     [
+                                { targets : [0],
+                                    render : function(data, type, row) 
+                                    {
+                                        actcall = data;
+                                        var s = "<div style=\"cursor: pointer;text-decoration: underline;\" onclick=\"window.open('https://www.qrz.com/db/" + actcall + "')\">" + data + "</div>";
+                                        return s;
+                                    }     
+                                },
                                 { targets : [1,5],  // Date column
                                     render : function(data, type, row) 
                                     {
                                         if(data.length < 5) return data;
                                         // convert database date to UTC
-                                        // FROM_UNIXTIME(a.datetime*10-62135596800,'%Y.%m.%d %H:%i')
-                                        var dsec = data * 10 - 62135596800;
+                                        var t2010 = 1262300400;  // senconds of year 2010 (ref Unix Epoch)
+                                        var dsec = Number(data) + Number(t2010);
                                         var d = new Date(dsec * 1000);
                                         return d.getUTCFullYear() + "." + to2(d.getUTCMonth()+1) + "." + to2(d.getUTCDate()) + " " + to2(d.getUTCHours()) + ":" + to2(d.getUTCMinutes());
                                     }     
@@ -202,25 +210,8 @@ function loadTable()
                                     var qrgnice = qrg.substring(0,5) + "." + qrg.substring(5,8);
                                     $("td:eq(6)", nRow).text(qrgnice);
                                 }
-                                
-                                // Format Distances
-                                if(aData['DIST1'] > 0)
-                                {
-                                    if(aData['DIST1'] >=1000)
-                                    {
-                                        var km = ((aData['DIST1'] / 1000).toFixed(3)).toString();
-                                        $("td:eq(4)", nRow).text(km);
-                                    }
-                                }
-                                
-                                if(aData['DIST2'] > 0)
-                                {
-                                    if(aData['DIST2'] >=1000)
-                                    {
-                                        var km = ((aData['DIST2'] / 1000).toFixed(3)).toString();
-                                        $("td:eq(8)", nRow).text(km);
-                                    }
-                                }
+                                $("td:eq(0)", nRow).css('font-weight', '700');
+                                $("td:eq(0)", nRow).css('color', '#404040');
                             },
         }
     );

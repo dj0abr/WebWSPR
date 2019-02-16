@@ -152,6 +152,26 @@ function printUntertitel_map()
     createDirselListbox('dirselID','untertitel_bandsel');
 }
 
+function printUntertitel_stat()
+{
+    document.getElementById('untertitel').innerHTML =
+`
+<form action="/bandsel.php" method="post" enctype="multipart/form-data">
+    <div class="untertitel_bandsel" id="untertitel_bandsel"></div>
+    <div class="untertitel_bandsel" id="untertitel_timesel"></div>
+</form>
+
+<div class="untertitel1" id="untertitel1"></div>
+<div class="untertitel2" id="untertitel2"></div>
+`;
+
+document.getElementById('untertitel1').style.width = ut1wid;
+document.getElementById('untertitel2').style.width = ut2wid;
+
+    createBandselListbox('bandselID','untertitel_bandsel');
+    setBandTimeListBoxDefaults();
+}
+
 function printUntertitel()
 {
     document.getElementById('untertitel').innerHTML =
@@ -177,7 +197,7 @@ document.getElementById('untertitel2').style.width = ut2wid;
 function footer()
 {
     
-        document.getElementById('header_mytitle_inner_title').innerHTML = "U02-WebWSPR V2.21";
+        document.getElementById('header_mytitle_inner_title').innerHTML = "U02-WebWSPR V2.31";
         document.getElementById('footline').innerHTML =
 `
     <a class="footnote" href="http://www.dj0abr.de">WebWSPR by DJ0ABR</a><br>
@@ -282,7 +302,7 @@ function bandSelChanged()
 var selectTimeList;
 function createTimeselListbox(ID, parentID)
 {
-    var timearr = ["1h","2h","3h","4h","5h","6h","12h","24h","48h"];
+    var timearr = ["1h","2h","3h","4h","5h","6h","12h","1d","2d","4d","10d","20d","act mon"];
     selectTimeList = document.createElement("select");
     selectTimeList.id = ID;
     selectTimeList.name = ID;
@@ -310,7 +330,11 @@ function timeSelChanged()
     xmlhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
             // server "echos" the time
-            document.getElementById('timeselID').value = this.responseText.trim();
+            var str1 = this.responseText.trim();
+            document.getElementById('timeselID').value = str1;
+            
+            config.listtime = str1; // update config, because it may be old from browser cache
+
             updateGUI();
         }
     }
@@ -348,9 +372,11 @@ function bl_handler()
             }
             if(s.includes("listtime"))
             {
-                // replace all leading non-digits with nothin
-                var number = s.replace( /^\D+|\D+$/g, '') + "h";
-                selectTimeList.value = number;
+                var fi = s.indexOf("'");
+                var str = s.substring(fi+1);
+                var li = str.indexOf("'");
+                var str1 = str.substring(0,li);
+                selectTimeList.value = str1;
             }
         }
     }
@@ -468,8 +494,6 @@ function CurrentDate()
     var elem = document.getElementById("myBar");   
     elem.style.width = (restsec * 100 / 120) + '%';
     
-    // Update result display
-    UpdateResult();
     document.getElementById("header_call").innerHTML = "Op.: " + config.call + " " + config.qthloc;
     
     // Update Time to TX every second
@@ -512,6 +536,7 @@ function status_handler()
 function handler_UpdateTimeToTX(sa)        
 {
 var txing = 0;
+var mtw = 0;
 
     for(i=0; i<sa.length; i++)
     {
@@ -695,67 +720,38 @@ var txing = 0;
                 dec_lastalivestat = stat;
             }
         }
+        if(i==9)
+        {
+            mtw = Number(sa[i]);
+        }
+        if(i==10)
+        {
+            UpdateResult(mtw,Number(sa[i]));
+        }
     }
 }
 
-var xmlHttpObject = new XMLHttpRequest();
 
-function UpdateResult()
+function UpdateResult(nmy,nur)
 {
-    xmlHttpObject.open('get',"/JSON_STAT.txt");
-    xmlHttpObject.onreadystatechange = UpdateResultHandler;
-    xmlHttpObject.send(null);
-    return false;
-}
-
-function UpdateResultHandler()
-{
-    if (xmlHttpObject.readyState != 4) return;
         
     var myinfo = config.call + " ";
     var urinfo = " ";
     
-    // load statistics file
-    //var s = loadFile("/JSON_STAT.txt");
-    var s = xmlHttpObject.responseText;
-    if(s != null)
+    if(nmy < nur)
     {
-        var sa = s.split("\n");
-        for(i=0; i<sa.length; i++)
-        {
-            var linearr = sa[i].split(",");
-            if(linearr.length>=3)
-            {
-                if(linearr[0].includes("2-way"))
-                {
-                    var mys = linearr[1];
-                    var urs = linearr[2];
-                    var myarr = mys.split(":");
-                    var urarr = urs.split(":");
-                    mys = myarr[1];
-                    urs = urarr[1];
-                    mys = mys.replace(/\D/g, "");
-                    urs = urs.replace(/\D/g, "");
-                    var nmy = Number(mys);
-                    var nur = Number(urs);
-                    if(nmy < nur)
-                    {
-                        myinfo += "<a style='font-size:14px; color:red;'>" + mys + "</a>";
-                        urinfo += "<a style='font-size:14px; color:green;'>" + urs + "</a>";
-                    }
-                    else if(nmy > nur)
-                    {
-                        myinfo += "<a style='font-size:14px; color:green;'>" + mys + "</a>";
-                        urinfo += "<a style='font-size:14px; color:red;'>" + urs + "</a>";
-                    }
-                    else
-                    {
-                        myinfo += "2w:" + mys;
-                        urinfo += "2w:" + urs;
-                    }
-                }
-            }
-        }
+        myinfo += "<a style='font-size:14px; color:red;'>" + nmy + "</a>";
+        urinfo += "<a style='font-size:14px; color:green;'>" + nur + "</a>";
+    }
+    else if(nmy > nur)
+    {
+        myinfo += "<a style='font-size:14px; color:green;'>" + nmy + "</a>";
+        urinfo += "<a style='font-size:14px; color:red;'>" + nur + "</a>";
+    }
+    else
+    {
+        myinfo += "2w:" + nmy;
+        urinfo += "2w:" + nur;
     }
     
     myinfo += " ";
@@ -766,7 +762,7 @@ function UpdateResultHandler()
     if(config.call_ur_sel == 'c5') urinfo += " " + config.call_ur5;
     
     
-    document.getElementById("header_result1").innerHTML = "2-way result: " + myinfo;
+    document.getElementById("header_result1").innerHTML = "2-way result (" + config.listtime + "): " + myinfo;
     document.getElementById("header_result2").innerHTML = urinfo;
 }
 
@@ -798,7 +794,8 @@ function loadFile(filePath)
     return result;
 }
 
-/*
+/* Sample for an async file loader:
+
 var xmlHttpObject = new XMLHttpRequest();
 function loadFileAsync(filePath, handler)
 {
@@ -950,3 +947,4 @@ function bandName(idx)
     if(idx <= 14) return bandindex[idx]+"m";
     return bandindex[idx]+"cm";
 }
+
