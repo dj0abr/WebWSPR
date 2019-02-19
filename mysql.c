@@ -47,8 +47,8 @@ int SendRequestToServer(char *rxbuf, char *reqname);
 unsigned long getMonthStartTime();
 unsigned long getSTime(int diff_h);
 
-//char wsprserver[50] = {"wx.spdns.de"};
-char wsprserver[50] = {"192.168.0.109"};
+char wsprserver[50] = {"wx.spdns.de"};
+//char wsprserver[50] = {"192.168.0.109"};
 #define WSPRPORT 9095
 
 #define RXBUF_SIZE 1000000
