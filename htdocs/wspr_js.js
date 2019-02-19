@@ -197,7 +197,7 @@ document.getElementById('untertitel2').style.width = ut2wid;
 function footer()
 {
     
-        document.getElementById('header_mytitle_inner_title').innerHTML = "U02-WebWSPR V2.31";
+        document.getElementById('header_mytitle_inner_title').innerHTML = "U02-WebWSPR V2.32";
         document.getElementById('footline').innerHTML =
 `
     <a class="footnote" href="http://www.dj0abr.de">WebWSPR by DJ0ABR</a><br>
