@@ -373,6 +373,11 @@ char s[256];
 
     // check if it is already running, if yes then exit
     isRunning();
+    
+    // delete old OFF file
+    // and remove the signaling file
+    snprintf(s,sizeof(s),"rm %s/%s/onoff.cmd 2>/dev/null",htmldir,phpdir);
+    system(s);
 
     if(argc == 1)
     {

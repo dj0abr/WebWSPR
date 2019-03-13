@@ -47,6 +47,7 @@ int dds_txpwr = 50;
 int dds_cal = 0;
 int dds_if = 9000;
 int hamlib_trxnr = 0;
+char sndcard_selection[50];
 
 int readConfigSilent()
 {
@@ -318,6 +319,14 @@ char txt[2000], *hp;
             if(hp)
             {
                 extract_band_array(fp);
+            }
+            
+            hp = strstr(txt,"sndcard:");
+            if(hp)
+            {
+                hp = strchr(txt,':');
+                char *p = cleanString(hp+1,1);
+                snprintf(sndcard_selection,sizeof(sndcard_selection)-1,"%s",p);
             }
         }
 

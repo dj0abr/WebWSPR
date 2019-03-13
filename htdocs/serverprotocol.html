@@ -24,14 +24,9 @@ function handleContent()
 {
     if (xmlHttpObject.readyState == 4)
     {
-        var Zeilenananzahl = 1000;
         var lines = xmlHttpObject.responseText.split('\n');
         var text = "";
-        var len = Zeilenananzahl;
-        if(lines.length <= Zeilenananzahl)
-            len = lines.length-1;
-        if(len < 1) return;
-        for(i=(lines.length-1); i>(lines.length-len); i--)
+        for(i=0; i<lines.length; i++)
         {
             text = text + lines[i] + '<br>';
         }
@@ -46,6 +41,6 @@ function start()
 }
 </script>
 
-<p class="protokoll" id="myContent"></p>
+<p class="protokoll" id="myContent">test</p>
 </body>
 </html>

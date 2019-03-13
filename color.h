@@ -1,4 +1,4 @@
 #include <gd.h>
-int getPixelColor(float val);
+int getPixelColor(int id, double val);
 void allocatePalette(gdImagePtr img);
-void calcColorParms(int fstart, int fend, double *d);
+void calcColorParms(int id, int fstart, int fend, double *d);

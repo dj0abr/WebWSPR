@@ -98,6 +98,7 @@
         $dds_cal = checkNumber($_POST['dds_cal'],-10000,10000);
         $dds_if = checkNumber($_POST['dds_if'],0,50000);
         $hamlib_trx = $_POST['hamlib_trx'];
+        $sndcard = $_POST['sndcard'];
         
         // read configfile and split into a stringarray line by line
         $cfg = file_get_contents("phpdir/wsprconfig.js");
@@ -132,6 +133,7 @@
             setElement($cfgarr[$i],"dds_cal:",$dds_cal);
             setElement($cfgarr[$i],"dds_if:",$dds_if);
             setElement($cfgarr[$i],"hamlib_trx:",$hamlib_trx);
+            setElement($cfgarr[$i],"sndcard:",$sndcard);
             
             $cfgarr[$i] = $cfgarr[$i]."\n";
         }

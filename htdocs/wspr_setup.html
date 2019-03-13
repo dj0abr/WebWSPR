@@ -113,6 +113,7 @@ function loadFields()
     document.getElementById('dds_cal').value= config.dds_cal;
     document.getElementById('dds_if').value= config.dds_if;
     //document.getElementById('hamlib_trx').value= config.hamlib_trx; // this is done just after reloading the TRX list, see below
+    document.getElementById('sndcard').value= config.sndcard;
     
     setVisibility();
     setRBs();
@@ -380,7 +381,31 @@ function setVisibility()
             select your transceiver model
         </td>
     </tr>
-    
+
+    <!--  Soundcard Settings -->
+    <tr>
+        <td colspan="3" class="setup_title">
+            Soundcard Settings
+        </td>
+    </tr>
+    <tr>
+        <td class="setup_text">
+            Soundcard
+        </td>
+        <td>
+            <select id="sndcard" name="sndcard">
+                <option value="auto">auto</option>
+                <option value="pulse">pulse</option>
+                <option value="default">default</option>
+            </select> 
+        </td>
+        <td class="setup_info">
+            auto ... searches for an USB soundcard<BR>
+            pulse ... use pulseaudio<BR>
+            default ... use system default card
+        </td>
+    </tr>
+
     <!--  Waterfall -->
     <tr>
         <td colspan="3" class="setup_title">
@@ -419,7 +444,7 @@ function setVisibility()
         </td>
         <td class="setup_info">
             AUTOmode=OFF: setting for high levels (default:50)<br>
-            AUTOmode=ON:  default:0, higher=brighter signal traces 
+            AUTOmode=ON:  default:10 (min:1), higher=brighter signal traces 
         </td>
     </tr>
     <tr>

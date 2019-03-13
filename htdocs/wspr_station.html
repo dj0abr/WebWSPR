@@ -1,0 +1,81 @@
+<!doctype html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>U02-WebWSPR</title>
+<link rel="icon" href="/favicon.ico?" type="image/x-icon">
+<script type="text/javascript" src="jquery-3.3.1.js"></script>
+<script type="text/javascript" src="jquery.dataTables.min.js"></script>
+<link rel="stylesheet" type="text/css" href="jquery.dataTables.min.css">
+<script type="text/javascript" src="phpdir/wsprconfig.js?ver<%=DateTime.Now.Ticks.ToString()%>" type="text/javascript"></script>
+<script type="text/javascript" src="wspr_js.js?ver<%=DateTime.Now.Ticks.ToString()%>" type="text/javascript"></script>
+<script type="text/javascript" src="countries.js"></script>
+<link rel="stylesheet" type="text/css" href="wspr_style.css">
+<script src="http://js.nicedit.com/nicEdit-latest.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+
+    bkLib.onDomLoaded(function(){
+        new nicEditor(
+        {
+            fullPanel : true, 
+        }).panelInstance('mytest');
+    });
+
+</script>
+
+<style>
+</style>
+</head>
+
+<body>
+
+<script>
+
+window.onload = start;
+
+var xmlHttpObject = new XMLHttpRequest();
+
+function start()
+{
+
+    setInterval(CurrentDate, 1000); // display page header
+
+    // load editor contents
+    xmlHttpObject.open('get',"phpdir/mystation.html");
+    xmlHttpObject.onreadystatechange = getTextFile;
+    xmlHttpObject.send(null);
+}
+
+function getTextFile()
+{
+    if (xmlHttpObject.readyState == 4)
+    {
+        nicEditors.findEditor('mytest').setContent(xmlHttpObject.responseText);
+    }
+}
+
+function textsave()
+{
+    var text = nicEditors.findEditor('mytest').getContent();
+    document.getElementById("rawtext").value = text;
+    document.getElementById("mystationform").submit();
+}
+</script>
+
+
+<div id="headline" class="header"></div>
+<script>
+    printHeader_simple();
+</script>
+
+<textarea id="mytest" name="myArea2" cols="100" rows="50"></textarea>
+
+<form action="/mystationhandler.php" id="mystationform" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="rawtext" id="rawtext">
+    Password: <input type="text" name="password" id="password">
+    <button type="button" onclick="textsave()">SAVE</button>
+</form>
+<a id="footline"></a>
+<script>footer();</script>
+</body>
+</html>

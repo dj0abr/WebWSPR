@@ -1,72 +1,56 @@
-// bitte nur den Text innerhalb der ' ' veraendern ! Alles andere lassen wie es ist
 var config = {
-    // Persoenliche Einstellungen
+    // personal settings
     call: 'NOCALL',
     qthloc: 'AA00AA',
     
     // HTML Title of the pages
     webtitle: 'WebWSPR',
     
-    // Wasserfalleinstellungen
-    // soviele Sekunden werden zu einer Zeile zusammengefasst
-    // mögliche Werte: 1,2 oder 4
+    // WF settings
+    // seconds per line (n=1,2 or 4)
     secondsPerLine: 4,
-    // Frequenzbereich des Wasserfalls, 
-    // gebe hier die Frequenz des linken und rechnten Rands ein
+    // WF's frequency range
+    // left and right margin
     FrequencyLeft: 1350,
     FrequencyRight: 1650,
     
-    // TX Modus
-    // moegliche Werte:
-    // 0=AUS, 1=ICOM, 2=DDS, 3=hamlib, 4=TRX mit serieller PTT
+    // TX Mode
+    // 0=OFF, 1=ICOM, 2=U02-DDS, 3=hamlib, 4=TRX with serial PTT control (RTS/DTR)
     txmode: 0,
     
-    // Band für die Spotanzeige in den Listen
+    // list range
     listband: '40m',
-    
-    // Zeitspane für die Listen
     listtime: '6h',
     
-    // WSPR Sendeleistung in dBm
+    // WSPR TX power dBm
     txpower: 37,
     
     // TX Frequenz Offset 
     txoffset: 1500,
     
-    // Kalibrationseinstellungen 
-    // Kalibrierung des Spektrums auf ein -80dBm Signal
-    // --- solange es noch keine Spektrumanzeige gibt muss diese Einstellung auf 0 beiben ---
-    // Fließkommazahl: das Komma muss als Punkt eingegeben werden
+    // Calibration settings (currently not used)
     calib80dBm: 0,
     
-    // Wasserfalleinstellungen
-    // Pegel: dieser Wert verändert die Helligkeit und wird auf das Grundrauschen ohne Signal eingestellt
-    // Wertebereich: beliebig, wird spaeter zum dBm Wert des Grundrauschens
-    // nur ganze Zahlen ohne Komma
+    // WF picture settings
     levelWF: 0,
-    
-    // Verstärkung: dieser Wert legt fest wie hell stärkere Signale dargestellt werden
-    // Wertebereich: beliebig, nur ganze Zahlen ohne Komma
     gainWF: 0,
     
-    // Mittelwertbildung Y-Achse
-    // der vertikale Mittelwert der Farbpixel wird ueber die hier angegebene Zeit in Sekunden gebildet
-    // ueblicher Wert ca. 3, moeglicher Wertebereich: 1-20
+    // calculates the mid value over n lines
+    // n ... 1-20
     midHF: 6,
     
-    // Wasserfall-Automodus
-    // aus=0, ein=1
-    // wenn eingeschaltet passt es die Farbpixel in den Farbraum von 0-255 ein
+    // WF automode, tries to measure min and max values automatically
     autoWF: 1,
-    
-    // Call zum Vergleich im Spots-Fenster
+
+    // Spot comparision
+    // up to 5 calls for spot comparision
     call_ur1: '',
     call_ur2: '',
     call_ur3: '',
     call_ur4: '',
     call_ur5: '',
     
-    // select one of the 5 calls for the list display (0...4)
+    // select one of the 5 calls for comparision
     call_ur_sel: 'c1',
     
     // ICOM CIV adress (hexadezimal with 'h' or decimal)
@@ -104,4 +88,8 @@ var config = {
         70: 432.3000,
         23: 1296.500
     },
+    
+    // sound card selection
+    // supported values: auto (seeks card automatically) or pulse (uses pulseaudio) or hw:x,y
+    sndcard: 'auto',
 }

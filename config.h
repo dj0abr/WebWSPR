@@ -24,3 +24,5 @@ extern int dds_txpwr;
 extern int dds_cal;
 extern int dds_if;
 extern int hamlib_trxnr;
+extern char sndcard_selection[50];
+

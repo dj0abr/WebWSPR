@@ -66,10 +66,6 @@ snd_pcm_t *capture_handle=NULL, *playback_handle=NULL;
 // returns 0=failed, 1=ok
 int soundcard_init()
 {
-    // automatically choose a sound card
-    if(scan_sndcards() == 0)
-        return 0;
-    
     // start a new process
     int ret = pthread_create(&snd_tid,NULL,sndproc, 0);
     if(ret)
@@ -88,10 +84,12 @@ void *sndproc(void *pdata)
 int phase = 0;  // 0=wait, 1=record
 int txrx = 0;   // 0=rx, 1=tx
 int alcnt = 0;  // alive counter;
+char lastsndcard[50] = {0};
 
     pthread_detach(pthread_self());
 
     deb_printf("SOUND","sndproc process started\n");
+    
     while(running)
     {
         // re-read the TXRX configuration if it was changed
@@ -105,9 +103,20 @@ int alcnt = 0;  // alive counter;
             readTXhopping();
         }
         
+        // if the user selects another soundcard, reopen sound
+        if(strcmp(sndcard_selection,lastsndcard))
+        {
+            // soundcard selection has changed
+            exit_soundcard();
+            capture_handle = NULL;
+            playback_handle = NULL;
+            strncpy(lastsndcard,sndcard_selection,sizeof(lastsndcard));
+        }
+        
         // wenn der handle NULL ist öffne die Soundkarte
         if(capture_handle == NULL && playback_handle == NULL)
         {
+            scan_sndcards();
             int ret = restart_soundcard();
             if(ret)
             {
@@ -241,7 +250,13 @@ int scan_sndcards()
 	int cardNum;
 	cardNum = -1;			//ALSA starts numbering at 0 so this is intially set to -1.
 	char cardname[80];
-	deb_printf("SOUND","Seek available sound cards");
+    
+    if(strcmp(sndcard_selection,"auto"))
+    {
+        return 1;
+    }
+    
+	deb_printf("SOUND","auto sndcard search mode selected. Seek available sound cards");
 
 	while(1)
 	{
@@ -303,7 +318,7 @@ int scan_sndcards()
     
     if(wspr_cardnum == -1)
     {
-        deb_printf("SOUND","no soundcard found. Exit soundcard process");
+        deb_printf("SOUND","no soundcard found");
         return 0;
     }
     
@@ -320,8 +335,15 @@ int init_soundcard()
 	unsigned int rate = CAPTURE_RATE;
     char sndcard[80];
     
-    snprintf(sndcard,sizeof(sndcard)-1,"hw:%i,0",wspr_cardnum);
-
+    if(strcmp(sndcard_selection,"auto"))
+    {
+        // no auto mode, use specified card
+        strcpy(sndcard,wspr_cardname);
+        strcpy(sndcard,sndcard_selection);
+    }
+    else
+        snprintf(sndcard,sizeof(sndcard)-1,"hw:%i,0",wspr_cardnum);
+    
     // if pulseaudio is used the uncomment these lines
 	//strcpy(sndcard,"pulse");
 	//strcpy(wspr_cardname,"pulse");
@@ -400,7 +422,16 @@ int init_soundcard_playback()
 	unsigned int rate = CAPTURE_RATE;
     char sndcard[80];
 
-    snprintf(sndcard,sizeof(sndcard)-1,"hw:%i,0",wspr_cardnum);
+    if(strcmp(sndcard_selection,"auto"))
+    {
+        // no auto mode, use specified card
+        strcpy(sndcard,wspr_cardname);
+        strcpy(sndcard,sndcard_selection);
+    }
+    else
+    {
+        snprintf(sndcard,sizeof(sndcard)-1,"hw:%i,0",wspr_cardnum);
+    }
 
 	deb_printf("SOUND","Initialize soundcard: %s ... %s", wspr_cardname,sndcard);
 

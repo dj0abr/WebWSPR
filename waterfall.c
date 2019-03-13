@@ -237,7 +237,7 @@ void drawFFTline(gdImagePtr dst, double *d, int fstart, int fend)
 {
 static int phase = 0;
 
-    calcColorParms(fstart,fend,d);
+    calcColorParms(0,fstart,fend,d);
     
     for(int i=fstart; i<fend; i++)
     {
@@ -255,7 +255,7 @@ static int phase = 0;
 			gdImageLine(dst, xs, wf_toprow, xe, wf_toprow, 253);
 		// normal FFT line
 		else
-            gdImageLine(dst, xs, wf_toprow, xe, wf_toprow, getPixelColor(d[i]));
+            gdImageLine(dst, xs, wf_toprow, xe, wf_toprow, getPixelColor(0,d[i]));
     }
 
 	phase++;

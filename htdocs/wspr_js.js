@@ -61,6 +61,7 @@ function printHeader_simple()
         <a href="wspr_map.html?cb=` + myrand + `" class="diagselbutton">Map</a>
         <a href="wspr_txsettings.html?cb=` + myrand + `" class="diagselbutton">RX/TX QRG</a>
         <a href="wspr_setup.html?cb=` + myrand + `" class="diagselbutton">SETUP</a>
+        <a href="wspr_station.html?cb=` + myrand + `" class="diagselbutton">Station</a>
     </div>
     <div>
         <div class="listbuts_top">
@@ -117,6 +118,7 @@ function printHeader()
             <a href="wspr_map.html?cb=` + myrand + `" class="diagselbutton">Map</a>
             <a href="wspr_txsettings.html?cb=` + myrand + `" class="diagselbutton">RX/TX QRG</a>
             <a href="wspr_setup.html?cb=` + myrand + `" class="diagselbutton">SETUP</a>
+            <a href="wspr_station.html?cb=` + myrand + `" class="diagselbutton">Station</a>
         </div>
             <div class="listbuts">
                 <div class="listbuts_top">
@@ -197,7 +199,7 @@ document.getElementById('untertitel2').style.width = ut2wid;
 function footer()
 {
     
-        document.getElementById('header_mytitle_inner_title').innerHTML = "U02-WebWSPR V2.32";
+        document.getElementById('header_mytitle_inner_title').innerHTML = "U02-WebWSPR V2.33";
         document.getElementById('footline').innerHTML =
 `
     <a class="footnote" href="http://www.dj0abr.de">WebWSPR by DJ0ABR</a><br>

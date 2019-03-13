@@ -1,0 +1,88 @@
+<!doctype html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WebWSPR</title>
+</head>
+<style>
+.protokoll { font-family:Courier; font-size:14px; color:Chartreuse; font-weight: bold;margin:0px 0px; text-align:left}
+.wfpanel
+{
+    width: 2000px;
+}
+
+</style>
+<body style="background-color:black">
+
+<script>
+/*
+Streaming via Websockets:
+Apache wird so konfiguriert, dass er Anfragen umleitet.
+Beispiel:
+wx.spdns.de wird ganz normal vom Port80 abgearbeitet
+ws://wx.spdns.de/ws/dummy soll jedoch zum Port zB 3001 umgeleitet werden.
+Dabei kommt es auf das Unterverzeichnis ws an, beim Aufruf muss jedoch noch ein Dummy angegeben werden
+
+Konfiguration:
+Proxy Apache Module aktivieren:
+
+a2enmod proxy
+a2enmod proxy_http
+a2enmod proxy_wstunnel
+
+in /etc/apache2/sites-available/000-default.conf
+die Umleitung eintragen:
+
+	<Location "/ws/">
+        	ProxyPass "http://localhost:3001/"
+	</Location>
+
+*/
+window.onload = start;
+
+var socket = new WebSocket("ws://192.168.0.2/ws/dummy");
+
+// callback-Funktion wird gerufen, wenn die Verbindung erfolgreich aufgebaut werden konnte
+socket.onopen = function () {
+    alert("Verbindung wurde erfolgreich aufgebaut");
+};
+
+// callback-Funktion wird gerufen, wenn eine neue Websocket-Nachricht eintrifft
+socket.onmessage = function (messageEvent) {
+    alert(messageEvent.data);
+};
+
+// callback-Funktion wird gerufen, wenn ein Fehler auftritt
+socket.onerror = function (errorEvent) {
+    alert("Error! Die Verbindung wurde unerwartet geschlossen");
+};
+
+socket.onclose = function (closeEvent) {
+    alert('Die Verbindung wurde geschlossen --- Code: ' + closeEvent.code + ' --- Grund: ' + closeEvent.reason);
+};
+
+
+
+function start()
+{
+    setInterval(reloadData, 1000);
+}
+
+function reloadData()
+{
+    // loading an image: anti flicker
+    var myimg = document.getElementById('wf');  // image to be shown
+    var newImg = new Image;                     // create a new image
+    newImg.onload = function() {                // when it is loaded, assign the new image to my image
+        myimg.src = newImg.src;
+    }
+    // load the new image
+    newImg.src = "wfpic.jpg?cb=" + Math.random();
+}
+
+</script>
+
+<div class="wfpanel" id="wfpanel">
+    <img id="wf" alt="Waterfall" src="wfpic.jpg">
+</div>
+</body>
+</html>
