@@ -274,6 +274,16 @@ int cpdefault = 0;
         system(s);
     }
     
+    // check if mystation.html is in its folder
+    snprintf(s,255,"%s/%s/mystation.html",htmldir,phpdir);
+    sz = getFileSize(s);
+    if(sz == -1)
+    {
+        // it's not there, copy the default file to phpdir
+        snprintf(s,255,"cp %s/mystation.html %s/%s/mystation.html",htmldir,htmldir,phpdir);
+        system(s);
+    }
+    
     setFilePermissions();
 }
 
