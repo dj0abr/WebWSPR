@@ -145,6 +145,10 @@ void querySpots()
     ret = SendRequestToServer(db_rxbuf,"REQU2");
     if(ret == 1) makeSpotsJSONtableSpots(db_rxbuf,"SPOTS_JSONTX.txt");
     
+    // request WebWSPR stations
+    ret = SendRequestToServer(db_rxbuf,"REQU8");
+    if(ret == 1) makeStationsJSONtable(db_rxbuf);
+    
     // close the database
     deb_printf("MYSQL","Spot update finished, CLOSE database and disconnect");
     sendTypeToServer("CLOSE");
