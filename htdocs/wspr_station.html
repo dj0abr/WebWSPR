@@ -24,6 +24,19 @@
 </script>
 
 <style>
+.panel1
+{
+    width: 800px;
+    background-color:#f0f0f0;
+    font-size: 18px;
+    font-weight: 700;
+}
+table.cell-border tbody th, table.cell-border tbody td {
+    padding: 3px;   /* row height */
+    padding-right: 5px;
+    white-space: nowrap;
+    font-size: 16px;
+}
 </style>
 </head>
 
@@ -39,9 +52,12 @@ function start()
 {
 
     setInterval(CurrentDate, 1000); // display page header
+    
+    loadTable();
+    setInterval(reloadTable, 5000);
 
     // load editor contents
-    xmlHttpObject.open('get',"phpdir/mystation.html");
+    xmlHttpObject.open('get',"phpdir/mystation.html?cb="+Math.random());
     xmlHttpObject.onreadystatechange = getTextFile;
     xmlHttpObject.send(null);
 }
@@ -60,6 +76,77 @@ function textsave()
     document.getElementById("rawtext").value = text;
     document.getElementById("mystationform").submit();
 }
+
+var StationTable;
+
+function loadTable() 
+{
+    StationTable = $('#stations').DataTable( 
+        {
+            ajax:     "STATIONS.txt",
+            columns: [
+                        { data: 'lastheard' },
+                        { data: 'callsign' },
+                        { data: 'url' }
+                    ],
+            "order": [[ 1, "asc" ]],
+            scrollY:        100,	// vertical size
+            scrollX:        200,
+            scrollCollapse: true,
+            scroller:       true,
+            bLengthChange:  false,
+	    	searching:      false,
+	    	bInfo:          false,
+            bPaginate:      false,
+	    	pageLength:     20,		// number of displayed line by default
+	    	columnDefs :    [
+                                { targets : [0],  // Date column
+                                    render : function(data, type, row) 
+                                    {
+                                        // convert database date to UTC
+                                        // database has seconds elapsed since 2010
+                                        var t2010 = 1262300400;  // senconds of year 2010 (ref Unix Epoch)
+                                        var dsec = Number(data) + Number(t2010);
+                                        var d = new Date(dsec*1000);
+                                        return d.getUTCFullYear() + "." + to2(d.getUTCMonth()+1) + "." + to2(d.getUTCDate())  + " " + to2(d.getUTCHours()) + ":" + to2(d.getUTCMinutes());
+                                    }     
+                                },
+                                { targets : [2],
+                                    render : function(data, type, row) 
+                                    {
+                                        var url = data;
+                                        //if (url.toUpper(url.substring(0, 7) != "HTTP://")
+                                          //  url = "http://" + url;
+                                          var prefix = 'http://';
+                                            if (url.substr(0, prefix.length) !== prefix)
+                                            {
+                                            url = "http://" + url;
+                                            }
+
+                                        var s = "<div style=\"cursor: pointer;text-decoration: underline;\" onclick=\"window.open('" + url + "')\">" + url + "</div>";
+                                        return s;
+                                    }     
+                                },
+                            ],
+            fnRowCallback:  function (nRow, aData, iDisplayIndex, iDisplayIndexFull) 
+                            {
+                                $("td:eq(0)", nRow).css('font-weight', '500');
+                                $("td:eq(1)", nRow).css('font-weight', '500');
+                                $("td:eq(2)", nRow).css('font-weight', '500');
+                                
+                                $("td:eq(0)", nRow).css('background', '#e0e0e0');
+                                $("td:eq(1)", nRow).css('background', '#d0d0d0');
+                                $("td:eq(2)", nRow).css('background', '#e0e0e0');
+                            },
+        }
+    );
+    $.fn.dataTable.ext.errMode = 'none';    // supress ajax error message if table not exists
+}
+
+function reloadTable()
+{
+    StationTable.ajax.reload(null,false);
+}
 </script>
 
 
@@ -68,11 +155,17 @@ function textsave()
     printHeader_simple();
 </script>
 
-<textarea id="mytest" name="myArea2" cols="100" rows="50"></textarea>
-
+<textarea id="mytest" name="myArea2" cols="145" rows="30"></textarea>
+<br>
+<div class="panel1" id="panel1">
+WebWSPR users (if an URL is specified in the SETUP):
+<table id="stations" class="cell-border" style="width:100%"> 
+</table>
+</div>
+<br><br>        
 <form action="/mystationhandler.php" id="mystationform" method="post" enctype="multipart/form-data">
     <input type="hidden" name="rawtext" id="rawtext">
-    Password: <input type="text" name="password" id="password">
+    Password: <input type="text" name="password" id="password"><br>
     <button type="button" onclick="textsave()">SAVE</button>
 </form>
 <a id="footline"></a>

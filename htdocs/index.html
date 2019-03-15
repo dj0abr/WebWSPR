@@ -84,7 +84,7 @@ function getCountry(call)
             var c = countries[i][1];
             if(c.length > 9) c = c.substring(0,9)+".";
             
-            var simg = "<div style=\"float: left; background-image: url(https://dl.dropboxusercontent.com/s/izcyieh1iatr4n5/flags.png);height: 15px; width: 20px; margin-top:3px; background-position: "+x+"px "+y+"px\"></div>" + "<div>" + c + "</div>";
+            var simg = "<div style=\"float: left; background-image: url(flags.png);height: 15px; width: 20px; margin-top:3px; background-position: "+x+"px "+y+"px\"></div>" + "<div>" + c + "</div>";
             return simg;
         }
     }

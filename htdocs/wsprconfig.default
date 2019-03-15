@@ -92,4 +92,7 @@ var config = {
     // sound card selection
     // supported values: auto (seeks card automatically) or pulse (uses pulseaudio) or hw:x,y
     sndcard: 'auto',
+    
+    // my station's URL
+    url: '',
 }

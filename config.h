@@ -4,6 +4,7 @@ int readConfigSilent();
 
 extern char callsign[30];
 extern char call_ur[MAXURCALLS][30];
+extern char myurl[256];
 extern int call_db_idx;
 extern char qthloc[20];
 extern int secondsPerLine;

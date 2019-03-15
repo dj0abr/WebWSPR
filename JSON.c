@@ -881,3 +881,48 @@ int f1=1,f2=1,f3=1,f4=1;
         fclose(fmyrx);
     }
 }
+
+/* make table for WebWSPR User
+{"data":[
+{"lastheard":"12345","callsign":"KC8HQS/4","url","myurl1"},
+{"lastheard":"12345","callsign":"DJ0ABR","url","myurl2"}
+]}
+ * */
+void makeStationsJSONtable(char *rxbuf)
+{
+    char fn[256];
+    int elems = 0;
+    int rows = splitData(sdata,rxbuf,&elems);
+    if(rows == 0) return;
+    
+    /*for(int i=0; i<rows; i++)
+    {
+        for(int j=0; j<elems; j++)
+        {
+            printf("<%s>",sdata[i][j]);
+        }
+        printf("\n");
+    }*/
+    
+    snprintf(fn,sizeof(fn),"%s/STATIONS.txt",htmldir);
+    FILE *fw = fopen(fn,"w");
+    if(fw)
+    {
+        // write JSON header
+        fprintf(fw,"{\"data\":[");
+
+        int fk=0;
+        for(int i=0; i<rows; i++)
+        {
+            if(fk) fprintf(fw,",");
+            fk = 1;
+            fprintf(fw,"{\"lastheard\":\"%s\",\"callsign\":\"%s\",\"url\":\"%s\"}", sdata[i][0],sdata[i][1],sdata[i][2]);
+        }
+        
+        // write JSON tail
+        fprintf(fw,"]}");
+            
+        fclose(fw);
+    }
+}
+

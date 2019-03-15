@@ -8,6 +8,7 @@ void makeSpotsJSONtableRanking(char *rxbuf);
 void makeSpotsJSONtableQTHLOCs(char *rxbuf);
 void deleteJSONlistfiles();
 int64_t getLastDate(char *s);
+void makeStationsJSONtable(char *rxbuf);
 
 #define MAXFIELDS   25          // check also minimum required number for 2way calculation
 #define MAXROWS     10000

@@ -109,6 +109,7 @@ function loadFields()
     document.getElementById('FrequencyLeft').value= config.FrequencyLeft;
     document.getElementById('FrequencyRight').value= config.FrequencyRight;
     document.getElementById('webtitle').value= config.webtitle;
+    document.getElementById('url').value= config.url;
     document.getElementById('dds_txpwr').value= config.dds_txpwr;
     document.getElementById('dds_cal').value= config.dds_cal;
     document.getElementById('dds_if').value= config.dds_if;
@@ -261,7 +262,30 @@ function setVisibility()
             enter full 6 digit locator (XXxxXX)
         </td>
     </tr>
-    
+    <tr>
+        <td class="setup_text">
+            Title:
+        </td>
+        <td>
+            <input type="text" name="webtitle" id="webtitle">
+        </td>
+        <td class="setup_info">
+        text displayed in the browser tab
+        </td>
+    </tr>
+    <tr>
+        <td class="setup_text">
+            Station URL (or IP):
+        </td>
+        <td>
+            <input type="text" name="url" id="url">
+        </td>
+        <td class="setup_info">
+            enter your URL here<br>
+            will be shown in the STATION list<br>
+            DON'T forget to change your password ! (phpdir/kmtools.php)
+        </td>
+    </tr>
     
     <!--  WSPR -->
     <tr>
@@ -546,24 +570,6 @@ function setVisibility()
         <td colspan="2">
             <input type="text" name="call_ur5" id="call_ur5" style="text-transform:uppercase" oninput="this.value = this.value.replace(/[^0-9A-Za-z\/]/g, '').replace(/(\..*)\./g, '$1');">
             <input type="radio" class="myradio" name="call_ur_sel" value="c5" id="call_ur5_sel">
-        </td>
-    </tr>
-    
-    <!--  Website -->
-    <tr>
-        <td colspan="3" class="setup_title">
-            Website Settings
-        </td>
-    </tr>
-    <tr>
-        <td class="setup_text">
-            Title:
-        </td>
-        <td>
-            <input type="text" name="webtitle" id="webtitle">
-        </td>
-        <td>
-        text displayed in the browser tab
         </td>
     </tr>
     

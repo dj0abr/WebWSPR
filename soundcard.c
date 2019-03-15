@@ -576,7 +576,10 @@ int err;
     fsave_status(PEAKLEVEL,(int)((double)(peak) * 100.0 / 32768.0));
 	
 	// save fft into a file for the waterfall
-	doFFT(samples,samplecnt,rec_channels);
+    if(phase == 1)
+    {
+        doFFT(samples,samplecnt,rec_channels);
+    }
 
 	if(!checkTime(1,51))
     {

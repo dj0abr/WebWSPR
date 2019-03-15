@@ -27,6 +27,7 @@ int hoursThisMonth();
 
 char callsign[30];
 char call_ur[MAXURCALLS][30];
+char myurl[256];
 int call_db_idx = 0;
 char qthloc[20];
 int secondsPerLine = 1;
@@ -327,6 +328,14 @@ char txt[2000], *hp;
                 hp = strchr(txt,':');
                 char *p = cleanString(hp+1,1);
                 snprintf(sndcard_selection,sizeof(sndcard_selection)-1,"%s",p);
+            }
+            
+            hp = strstr(txt,"url:");
+            if(hp)
+            {
+                hp = strchr(txt,':');
+                char *p = cleanString(hp+1,0);
+                snprintf(myurl,sizeof(myurl)-1,"%s",p);
             }
         }
 

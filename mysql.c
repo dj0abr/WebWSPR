@@ -167,7 +167,8 @@ void queryStatistics()
     if(startServerConnection() == 0) return;
 
     // tell calls from config to the server, mycall and the 5 other calls
-    sendTypeToServer("CALLS");  
+    sendTypeToServer("CALLS");
+    sendTypeToServer("MYURL");  
     
     // request RX spots, reported by us
     int ret = SendRequestToServer(db_rxbuf,"REQU1");
@@ -196,6 +197,10 @@ void queryStatistics()
     // request qthlocs for maps
     ret = SendRequestToServer(db_rxbuf,"REQU7");
     if(ret == 1) makeSpotsJSONtableQTHLOCs(db_rxbuf);
+    
+    // request WebWSPR stations
+    ret = SendRequestToServer(db_rxbuf,"REQU8");
+    if(ret == 1) makeStationsJSONtable(db_rxbuf);
     
     // close the database
     deb_printf("MYSQL","Statistics update finished, CLOSE database and disconnect");
@@ -362,6 +367,11 @@ void sendTypeToServer(char *type)
             strcat(cmd,";");
             strcat(cmd,call_ur[i]);
         }
+    }
+    
+    if(strstr(type,"MYURL"))
+    {
+        sprintf(cmd,"MYURL%s,%s",callsign,myurl);
     }
     
     if((ret = SendCmdToServer(cmd,type)))
